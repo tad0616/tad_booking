@@ -39,8 +39,8 @@ switch ($op) {
 
         $status    = empty($approval) ? 1 : 0;
         $pass_date = empty($approval) ? date('Y-m-d') : '0000-00-00';
-        foreach ($booking_week_section as $week => $week_section_id) {
-            foreach ($week_section_id as $section_id => $booking_date_arr) {
+        foreach ($booking_week_section as $week => $week_section_arr) {
+            foreach ($week_section_arr as $section_id => $booking_date_arr) {
                 Tad_booking_week::store(['booking_id' => $booking_id, 'section_id' => $section_id, 'week' => $week, 'start_date' => $start_date, 'end_date' => $end_date]);
                 foreach ($booking_date_arr as $booking_date) {
                     $waiting = Tad_booking_data::max_waiting($section_id, $booking_date);

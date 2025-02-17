@@ -18,10 +18,10 @@
 
         </div>
         <div class="col-lg-3">
-            <input type="text" name="content" id="content" class="form-control validate[required]" value="<{$content|default:''}>" placeholder="<{$smarty.const._MD_TADBOOKING_CONTENT}>">
+            <{include file="$xoops_rootpath/modules/tad_booking/templates/sub_item_menu.tpl" and_date=1 item_id=$item.id|default:0}>
         </div>
         <div class="col-lg-3">
-            <{include file="$xoops_rootpath/modules/tad_booking/templates/sub_item_menu.tpl" and_date=1 item_id=$item.id|default:0}>
+            <input type="text" name="content" id="content" class="form-control validate[required]" value="<{$content|default:''}>" placeholder="<{$smarty.const._MD_TADBOOKING_CONTENT}>">
         </div>
         <div class="col-lg-auto">
             <{if $act=="preview"}>
@@ -67,11 +67,11 @@
                                         <{if $week_section_id.$w.$section_id}>
                                             <{if $item.week_sections.$section_id.$w.$booking_date}>
                                                 <div style="font-size:0.9rem" data-bs-toggle="tooltip"  data-bs-html="true" title="<{foreach from=$item.week_sections.$section_id.$w.$booking_date key=waiting item=booking}><div><{$smarty.const._MD_TADBOOKING_DATA_WAITING}><{$waiting}>：<{$booking.name}></div><{/foreach}>">
-                                                    <{$booking_date|substr:5:10}> <input type="checkbox" name="booking_week_section[<{$w}>][<{$section_id}>][]" value="<{$booking_date}>"> <{$smarty.const._MD_TADBOOKING_DATA_WAITING}><{$waiting+1}>
+                                                    <{$booking_date|substr:5:10}> <input type="checkbox" name="booking_week_section[<{$w}>][<{$section_id}>][]" value="<{$booking_date}>" id="<{$booking_date}>_<{$w}>_<{$section_id}>"> <label for="<{$booking_date}>_<{$w}>_<{$section_id}>"><{$smarty.const._MD_TADBOOKING_DATA_WAITING}><{$waiting+1}></label>
                                                 </div>
                                             <{else}>
                                                 <div style="font-size:0.9rem">
-                                                    <{$booking_date|substr:5:10}> <input type="checkbox" name="week_section_id[<{$w}>][<{$section_id}>]" value="<{$smarty.session.now_user.uid}>" checked> <{$smarty.const._MD_TADBOOKING_DATA_WAITING}>1
+                                                    <{$booking_date|substr:5:10}> <input type="checkbox" name="booking_week_section[<{$w}>][<{$section_id}>][]" value="<{$booking_date}>" checked id="<{$booking_date}>_<{$w}>_<{$section_id}>"> <label for="<{$booking_date}>_<{$w}>_<{$section_id}>"><{$smarty.const._MD_TADBOOKING_DATA_WAITING}>1</label>
                                                 </div>
                                             <{/if}>
                                         <{/if}>
