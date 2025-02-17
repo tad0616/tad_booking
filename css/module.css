@@ -83,33 +83,28 @@ ul {
   padding-left: 20px;
 }
 
-.tooltip-inner {
-  max-width: 600px;
-  font-size: 1rem;
-  background-color: #3c65b1;
-  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.5);
-  line-height: 1.8;
-  color: rgb(255, 255, 255);
+/* 修改 Tooltip 背景和文字顏色 */
+.tooltip .tooltip-inner {
+  background-color: #3591e7; /* 修改提示框背景顏色 */
+  color: white; /* 文字顏色 */
 }
 
-.tooltip-inner li {
-  color: rgb(255, 255, 255);
+.tooltip .tooltip-arrow::before {
+  border-top-color: #3591e7 !important; /* 修改箭頭顏色 */
 }
 
-.tooltip.bs-tooltip-right .arrow:before {
-  border-right-color: #3c65b1 !important;
+/* 修改 Tooltip 箭頭顏色 */
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: #3591e7 !important;
 }
-
-.tooltip.bs-tooltip-left .arrow:before {
-  border-left-color: #3c65b1 !important;
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: #3591e7 !important;
 }
-
-.tooltip.bs-tooltip-bottom .arrow:before {
-  border-bottom-color: #3c65b1 !important;
+.tooltip.bs-tooltip-start .tooltip-arrow::before {
+  border-left-color: #3591e7 !important;
 }
-
-.tooltip.bs-tooltip-top .arrow:before {
-  border-top-color: #3c65b1 !important;
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-right-color: #3591e7 !important;
 }
 
 .bar {
@@ -196,4 +191,18 @@ label {
   padding: 2px;
 }
 
-@media (max-width: 768px) {}
+.vtb li.w9 {
+  width: 9%;
+}
+
+.vtb li.w13 {
+  width: 13%;
+}
+
+@media (max-width: 768px) {
+
+  .vtb li.w9,
+  .vtb li.w13 {
+    width: 100%;
+  }
+}

@@ -1,5 +1,6 @@
 <?php
 
 $adminmenu = [
-    {admin_option}    ['title' => _MI_TAD_ADMIN_ABOUT, 'link' => 'admin/about.php', 'icon' => 'images/admin/about.png'],
+    ['title' => _MI_TADBOOKING_ADM_MAIN, 'link' => 'admin/main.php', 'icon' => 'images/admin/button.png'],
+    ['title' => _MI_TAD_ADMIN_ABOUT, 'link' => 'admin/about.php', 'icon' => 'images/admin/about.png'],
 ];
