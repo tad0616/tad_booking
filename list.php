@@ -1,5 +1,6 @@
 <?php
 use Xmf\Request;
+use XoopsModules\Tadtools\BootstrapTable;
 use XoopsModules\Tadtools\My97DatePicker;
 use XoopsModules\Tadtools\SweetAlert;
 use XoopsModules\Tadtools\Utility;
@@ -24,8 +25,8 @@ $section_id    = Request::getInt('section_id');
 $week          = Request::getInt('week');
 $uid           = Request::getInt('uid');
 $batch_booking = Request::getArray('batch_booking');
-$start_date    = Request::getString('start_date', Tools::last_Sunday());
-$end_date      = Request::getString('end_date', Tools::next_Saturday());
+$start_date    = Request::getString('start_date', date('Y-m-d'));
+$end_date      = Request::getString('end_date', Tools::end_date($xoopsModuleConfig['max_booking_week']));
 
 /*-----------執行動作判斷區----------*/
 switch ($op) {
@@ -72,7 +73,8 @@ switch ($op) {
         $xoopsTpl->assign('start_date', $start_date);
         $xoopsTpl->assign('end_date', $end_date);
         My97DatePicker::render();
-        $SweetAlert = new SweetAlert();
+        $BootstrapTable = BootstrapTable::render();
+        $SweetAlert     = new SweetAlert();
         $SweetAlert->render("delete_booking", "ajax.php?op=delete_booking&", ['item_id', 'booking_date', 'section_id', 'booking_id', 'uid']);
         $op = 'tad_booking_list_index';
         break;

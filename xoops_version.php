@@ -73,7 +73,7 @@ $modversion['blocks'] = [
         'show_func'   => 'tad_booking_today',
         'template'    => 'tad_booking_today.tpl',
         'edit_func'   => 'tad_booking_today_edit',
-        'options'     => '水平頁籤',
+        'options'     => 'default|0.8',
     ],
     [
         'file'        => 'tad_booking_week.php',
@@ -82,7 +82,7 @@ $modversion['blocks'] = [
         'show_func'   => 'tad_booking_week',
         'template'    => 'tad_booking_week.tpl',
         'edit_func'   => 'tad_booking_week_edit',
-        'options'     => '水平頁籤',
+        'options'     => 'default|0.8',
     ],
 ];
 

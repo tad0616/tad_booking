@@ -1,4 +1,5 @@
 <?php
+
 namespace XoopsModules\Tad_booking;
 
 use Xmf\Request;
@@ -59,7 +60,6 @@ class Tools
                         $value[$k] = self::filter($k, $v, $mode);
                     }
                 }
-
             } elseif (! isset($filter_arr['pass']) || ! in_array($key, $filter_arr['pass'], true)) {
                 if ($mode == 'edit') {
                     $value = $myts->htmlSpecialChars($value);
@@ -202,20 +202,20 @@ class Tools
             return;
         }
         if (empty($booking_arr)) {
-            list($booking_arr, $first_booking) = self::booking_arr($booking_date, $booking_date, $section_id);
+            list($booking_arr, $ok_booking) = self::booking_arr($booking_date, $booking_date, $section_id);
         }
 
         //將 uid 編號轉換成使用者姓名（或帳號）
         $uid         = $xoopsUser->uid();
         $uid_name    = $booking_arr[$booking_date][$section_id][$uid]['info']['name'];
-        $is_approval = empty($booking_arr[$booking_date][$section_id][$uid]['status']) ? _MD_TADBOOKING_APPROVING : $uid_name;
+        $is_approval = empty($booking_arr[$booking_date][$section_id][$uid]['status']) ? '<span class="approving">'._MD_TADBOOKING_APPROVING.'</span>' : $uid_name;
 
         $icon = "{$is_approval}<a href=\"javascript:delete_booking('{$item_id}', '{$booking_date}', '{$section_id}', '{$item_id}', '{$booking_arr[$booking_date][$section_id][$uid]['booking_id']}', '{$uid}');\" style='color:#D44950;' ><i class='fa fa-times' ></i></a>";
         return $icon;
     }
 
     //取得用了該日期時段的uid
-    public static function booking_arr($start_date, $end_date, $section_id = "")
+    public static function booking_arr($start_date, $end_date, $section_id = "", $last_index = 'uid')
     {
         global $xoopsDB;
 
@@ -237,14 +237,17 @@ class Tools
             $waiting_data['uid']        = $uid;
             $waiting_data['info']       = json_decode($info, true);
 
-            $booking_arr[$booking_date][$section_id][$uid] = $waiting_data;
-            if (! isset($first_booking[$booking_date][$section_id])) {
-                $first_booking[$booking_date][$section_id] = $waiting_data;
+            if ($last_index == 'waiting') {
+                $booking_arr[$booking_date][$section_id][$waiting] = $waiting_data;
+            } else {
+                $booking_arr[$booking_date][$section_id][$uid] = $waiting_data;
             }
-
+            if (! isset($ok_booking[$booking_date][$section_id]) && $status == 1) {
+                $ok_booking[$booking_date][$section_id] = $waiting_data;
+            }
         }
 
-        return [$booking_arr, $first_booking];
+        return [$booking_arr, $ok_booking];
     }
     //立即寄出
     public static function send_now($email = "", $title = "", $content = "")
@@ -286,11 +289,12 @@ class Tools
     }
 
     // 計算 N 週後的日期
-    public static function end_date($week = 0)
+    public static function end_date($week = 0, $return_timestamp = false)
     {
         $today = new \DateTime();
         $today->modify("+{$week} weeks");
-        return $today->format('Y-m-d');
+
+        return $return_timestamp ? $today->getTimestamp() : $today->format('Y-m-d');
     }
 
     /**
@@ -326,5 +330,40 @@ class Tools
         }
 
         return $result;
+    }
+
+
+    public static function findDatesByTargetDay($targetDay)
+    {
+        $data = [];
+        // 获取当前日期和星期几
+        $selected_date = isset($targetDay) ? new \DateTime($targetDay) : new \DateTime();
+        $week          = $selected_date->format('w'); // 0 (Sunday) to 6 (Saturday)
+        $startOfWeek   = clone $selected_date;
+        $startOfWeek->modify('-' . $week . ' days');
+
+        // 生成本周的日期
+        $week_dates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $week_dates[] = $startOfWeek->format('Y-m-d');
+            $startOfWeek->modify('+1 day');
+        }
+
+        // 計算上一週和下一週的起始日期
+        $prev_week_start = clone $selected_date;
+        $prev_week_start->modify('-7 days')->modify('-' . $week . ' days')->format('Y-m-d');
+
+        $next_week_start = clone $selected_date;
+        $next_week_start->modify('+7 days')->modify('-' . $week . ' days')->format('Y-m-d');
+
+        $data['week_dates']      = $week_dates;
+        $data['prev_week_start'] = $prev_week_start->format('Y-m-d');
+        $data['next_week_start'] = $next_week_start->format('Y-m-d');
+        $data['next_week_start_ts'] = $next_week_start->getTimestamp();
+        $data['selected_date']   = $selected_date->format('Y-m-d');
+        $data['tomorrow']        = strtotime('+1 day');
+        $data['today']        = strtotime('today');
+        $data['chinese_week'] = Tad_booking_section::$chinese_week;
+        return $data;
     }
 }

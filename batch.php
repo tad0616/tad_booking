@@ -1,4 +1,5 @@
 <?php
+
 use Xmf\Request;
 use XoopsModules\Tadtools\FormValidator;
 use XoopsModules\Tadtools\My97DatePicker;
@@ -11,6 +12,7 @@ use XoopsModules\Tad_booking\Tad_booking_week;
 use XoopsModules\Tad_booking\Tools;
 
 /*-----------引入檔案區--------------*/
+
 require_once __DIR__ . '/header.php';
 $GLOBALS['xoopsOption']['template_main'] = 'tad_booking_index.tpl';
 require_once XOOPS_ROOT_PATH . '/header.php';
@@ -35,16 +37,16 @@ $approval             = Request::getString('approval');
 switch ($op) {
     case 'tad_booking_batch_store':
         $now_user_name = empty($_SESSION['now_user']['name']) ? $_SESSION['now_user']['uname'] : $_SESSION['now_user']['name'];
-        $booking_id    = Tad_booking::store(['start_date' => $booking_date, 'end_date' => $booking_date, 'content' => $content, 'info' => ['name' => $now_user_name, 'email' => $_SESSION['now_user']['email'], 'batch' => $booking_week_section, 'start_date' => $start_date, 'end_date' => $end_date]]);
+        $booking_id    = Tad_booking::store(['start_date' => $start_date, 'end_date' => $end_date, 'content' => $content, 'info' => ['name' => $now_user_name, 'email' => $_SESSION['now_user']['email']], 'batch' => ['dates' => $booking_week_section, 'start_date' => $start_date, 'end_date' => $end_date]]);
 
         $status    = empty($approval) ? 1 : 0;
         $pass_date = empty($approval) ? date('Y-m-d') : '0000-00-00';
         foreach ($booking_week_section as $week => $week_section_arr) {
             foreach ($week_section_arr as $section_id => $booking_date_arr) {
-                Tad_booking_week::store(['booking_id' => $booking_id, 'section_id' => $section_id, 'week' => $week, 'start_date' => $start_date, 'end_date' => $end_date]);
+                Tad_booking_week::store(['booking_id' => $booking_id, 'item_id' => $item_id, 'section_id' => $section_id, 'week' => $week, 'start_date' => $start_date, 'end_date' => $end_date]);
                 foreach ($booking_date_arr as $booking_date) {
                     $waiting = Tad_booking_data::max_waiting($section_id, $booking_date);
-                    Tad_booking_data::store(['booking_id' => $booking_id, 'booking_date' => $booking_date, 'section_id' => $section_id, 'waiting' => $waiting, 'status' => $status, 'pass_date' => $pass_date]);
+                    Tad_booking_data::store(['booking_id' => $booking_id, 'booking_date' => $booking_date, 'item_id' => $item_id, 'section_id' => $section_id, 'waiting' => $waiting, 'status' => $status, 'pass_date' => $pass_date]);
                 }
             }
         }
@@ -96,6 +98,7 @@ switch ($op) {
 $xoopsTpl->assign('toolbar', Utility::toolbar_bootstrap($interface_menu, false, $interface_icon));
 $xoopsTpl->assign('now_op', $op);
 $xoopsTpl->assign('max_booking_week', $xoopsModuleConfig['max_booking_week']);
+$xoopsTpl->assign('end_date_ts', Tools::end_date($xoopsModuleConfig['max_booking_week'], true));
 $xoTheme->addStylesheet('modules/tad_booking/css/module.css');
 $xoTheme->addStylesheet('modules/tadtools/css/vtb.css');
 require_once XOOPS_ROOT_PATH . '/footer.php';

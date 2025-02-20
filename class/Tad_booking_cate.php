@@ -85,6 +85,15 @@ class Tad_booking_cate
                 $data['items'] = Tad_booking_item::get_all(['cate_id' => $data['id'], 'enable' => 1, "`start` <= '$today'", "(`end` >= '$today' OR `end` = '0000-00-00')"], [], ['id', 'title', 'approval', 'info'], ['sort' => 'ASC']);
             }
 
+            if (in_array('items_sections', $other_arr) || in_array('all', $other_arr)) {
+                $data['items'] = Tad_booking_item::get_all(['cate_id' => $data['id'], 'enable' => 1, "`start` <= '$today'", "(`end` >= '$today' OR `end` = '0000-00-00')"], [], ['id', 'title', 'approval'], ['sort' => 'ASC'], 'id');
+                $item_ids      = array_keys($data['items']);
+                $sections      = Tad_booking_section::get_all(['`item_id` IN(' . implode(',', $item_ids) . ')'], ['week_arr'], ['id', 'item_id', 'title', 'week'], ['sort' => 'ASC'], 'id');
+                foreach ($sections as $section_id => $section) {
+                    $data['items'][$section['item_id']]['sections'][$section_id] = $section;
+                }
+            }
+
             if (in_array('approval_items', $other_arr) || in_array('all', $other_arr)) {
                 // 勿改為 $data['approval_items']，如此選單才能共用
                 $cate_where_arr['cate_id'] = $data['id'];
@@ -96,7 +105,6 @@ class Tad_booking_cate
                     $cate_where_arr[] = 'id IN(' . implode(',', $_SESSION['can_approve']) . ')';
                 }
                 $data['items'] = Tad_booking_item::get_all($cate_where_arr, [], ['id', 'title', 'approval', 'info'], ['sort' => 'ASC'], 'id');
-
             }
 
             if (in_array('item_arr', $other_arr) || in_array('all', $other_arr)) {
@@ -105,7 +113,6 @@ class Tad_booking_cate
                 foreach ($all_item as $id => $item) {
                     $data['item_arr'][$id]['count'] = $item_arr[$id];
                     $data['item_arr'][$id]['item']  = $item;
-
                 }
             }
 
@@ -310,7 +317,6 @@ class Tad_booking_cate
         $sql = "DELETE FROM `" . $xoopsDB->prefix("tad_booking_cate") . "`
         WHERE 1 $and";
         $xoopsDB->queryF($sql) or Utility::web_error($sql);
-
     }
 
     //自動取得tad_booking_cate的最新排序
@@ -417,13 +423,12 @@ class Tad_booking_cate
             }
             $main .= "<option value=$id $selected>{$prefix}{$title}{$counter}</option>";
             $main .= self::get_options($page, $mode, $default_id, $default_tad_booking_cate_parent_sn, $unselect_level, $id, $level);
-
         }
 
         return $main;
     }
 
-//更新排序
+    //更新排序
     function update_tad_booking_cate_sort()
     {
         global $xoopsDB;
@@ -435,5 +440,4 @@ class Tad_booking_cate
         }
         return _TAD_SORTED . " (" . date("Y-m-d H:i:s") . ")";
     }
-
 }

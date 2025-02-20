@@ -1,5 +1,7 @@
 <?php
+
 use Xmf\Request;
+use XoopsModules\Tadtools\Utility;
 use XoopsModules\Tad_booking\Tad_booking;
 use XoopsModules\Tad_booking\Tad_booking_data;
 use XoopsModules\Tad_booking\Tad_booking_item;
@@ -24,12 +26,13 @@ $booking_id   = Request::getInt('booking_id');
 $section_id   = Request::getInt('section_id');
 $uid          = Request::getInt('uid');
 $status       = Request::getInt('status');
+$end_date_ts  = Request::getInt('end_date_ts');
 
 if ($_SESSION['can_booking'] || $_SESSION['can_approve'] || $_SESSION['tad_booking_adm']) {
     switch ($op) {
 
         case "single_insert_booking":
-            single_insert_booking($booking_date, $section_id, $week, $item_id);
+            single_insert_booking($booking_date, $section_id, $week, $item_id, $end_date_ts);
             exit;
 
         case "delete_booking":
@@ -62,7 +65,6 @@ if ($_SESSION['can_booking'] || $_SESSION['can_approve'] || $_SESSION['tad_booki
                 $sort++;
             }
             die(_TAD_SORTED . "(" . date("Y-m-d H:i:s") . ")");
-
     }
 }
 
@@ -73,7 +75,7 @@ function update_booking_status($item_id, $booking_date, $booking_id, $section_id
     $item    = Tad_booking_item::get(['id' => $item_id]);
     $section = Tad_booking_section::get(['id' => $section_id]);
     $booking = Tad_booking::get(['id' => $booking_id]);
-    if (in_array($item_id, $_SESSION['can_approve'])) {
+    if (in_array($item_id, $_SESSION['can_approve']) || $_SESSION['tad_booking_adm']) {
         Tad_booking_data::update(['booking_id' => $booking_id, 'booking_date' => $booking_date, 'section_id' => $section_id], ['status' => $status, 'approver' => $_SESSION['now_user']['uid'], 'pass_date' => date('Y-m-d')]);
 
         $status_text  = $status ? _MD_TADBOOKING_APPROVE . _MD_TADBOOKING_PASS : _MD_TADBOOKING_APPROVE . _MD_TADBOOKING_DENY;
@@ -88,26 +90,28 @@ function update_booking_status($item_id, $booking_date, $booking_id, $section_id
                 Tools::send_now($approval['email'], $mail_title, $mail_content);
             }
         }
-
     }
 
     die('1');
 }
 
-function single_insert_booking($booking_date, $section_id, $week, $item_id)
+function single_insert_booking($booking_date, $section_id, $week, $item_id, $end_date_ts)
 {
-    $booking_id = Tad_booking::store(['start_date' => $booking_date, 'end_date' => $booking_date, 'content' => _MD_TADBOOKING_PERSONAL_BOOKING);
+    if ($end_date_ts < strtotime($booking_date) && !$_SESSION['tad_booking_adm']) {
+        redirect_header($_SERVER['PHP_SELF'], 3, _MD_TADBOOKING_NON_RESERVABLE_DATE);
+    }
+    $booking_id = Tad_booking::store(['start_date' => $booking_date, 'end_date' => $booking_date, 'content' => _MD_TADBOOKING_PERSONAL_BOOKING]);
 
     Tad_booking_week::store(['booking_id' => $booking_id, 'section_id' => $section_id, 'week' => $week, 'start_date' => $booking_date, 'end_date' => $booking_date]);
     $item      = Tad_booking_item::get(['id' => $item_id]);
     $status    = empty($item['approval']) ? 1 : 0;
     $pass_date = empty($item['approval']) ? date('Y-m-d') : '0000-00-00';
     $waiting   = Tad_booking_data::max_waiting($section_id, $booking_date);
-    Tad_booking_data::store(['booking_id' => $booking_id, 'booking_date' => $booking_date, 'section_id' => $section_id, 'waiting' => $waiting, 'status' => $status, 'pass_date' => $pass_date]);
+    Tad_booking_data::store(['booking_id' => $booking_id, 'booking_date' => $booking_date, 'item_id' => $item_id, 'section_id' => $section_id, 'waiting' => $waiting, 'status' => $status, 'pass_date' => $pass_date]);
     // 找出這段期間的所有預約
-    list($booking_arr, $first_booking) = Tools::booking_arr($booking_date, $booking_date, $section_id);
+    list($booking_arr, $ok_booking) = Tools::booking_arr($booking_date, $booking_date, $section_id);
 
-    $icon = Tools::delete_booking_icon($item_id, $booking_date, $section_id, $booking_arr) . "<div style='font-size:0.9rem'><a href='#' class='editable' data-name='content' data-type='text' data-pk='$booking_id' data-params=\"{op: 'tad_booking_update_content'}\">"._MD_TADBOOKING_PERSONAL_BOOKING."</a></div>";
+    $icon = Tools::delete_booking_icon($item_id, $booking_date, $section_id, $booking_arr) . "<div style='font-size:0.9rem'><a href='#' class='editable' data-name='content' data-type='text' data-pk='$booking_id' data-params=\"{op: 'tad_booking_update_content'}\">" . _MD_TADBOOKING_PERSONAL_BOOKING . "</a></div>";
     die($icon);
 }
 
@@ -132,21 +136,24 @@ function change_section_enable($section_id = "", $week = "")
 
 function delete_booking($section_id, $booking_date, $booking_id, $uid)
 {
-    if ($section_id && $booking_date) {
-        //取得用了該日期時段的uid
-        list($booking_arr, $first_booking) = Tools::booking_arr($booking_date, $booking_date, $section_id);
-        $del_waiting                       = $booking_arr[$booking_date][$section_id][$uid]['waiting'];
+    if (!$section_id || !$booking_date) return;
 
-        Tad_booking_data::destroy($booking_date, $section_id, $booking_id);
-        Tad_booking_week::destroy($section_id, $booking_id, $booking_date, $booking_date);
-        Tad_booking::destroy($booking_id, $booking_date);
+    // 取得該日期時段的預訂
+    list($booking_arr, $ok_booking) = Tools::booking_arr($booking_date, $booking_date, $section_id);
 
-        if (count($booking_arr) > 1) {
-            foreach ($booking_arr[$booking_date][$section_id] as $uid => $booking) {
-                if ($booking['waiting'] > $del_waiting) {
-                    $new_waiting = $booking['waiting'] - 1;
-                    Tad_booking_data::update([$booking_date, $section_id, $booking_id], ['waiting' => $new_waiting]);
-                }
+    // 刪除預訂記錄
+    Tad_booking_data::destroy($booking_date, $section_id, $booking_id);
+    Tad_booking_week::destroy($section_id, $booking_id, $booking_date, $booking_date);
+    Tad_booking::destroy($booking_id, $booking_date);
+
+
+    $del_waiting = $booking_arr[$booking_date][$section_id][$uid]['waiting'];
+
+    if (count($booking_arr) > 1) {
+        foreach ($booking_arr[$booking_date][$section_id] as $uid => $booking) {
+            if ($booking['waiting'] > $del_waiting) {
+                $new_waiting = $booking['waiting'] - 1;
+                Tad_booking_data::update([$booking_date, $section_id, $booking_id], ['waiting' => $new_waiting]);
             }
         }
     }

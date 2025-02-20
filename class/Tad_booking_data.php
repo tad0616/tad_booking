@@ -8,12 +8,12 @@ class Tad_booking_data
 {
     // 過濾用變數的設定
     public static $filter_arr = [
-        'int'     => ['booking_id', 'section_id', 'waiting', 'approver'], //數字類的欄位
-        'html'    => [],                                                  //含網頁語法的欄位（所見即所得的內容）
-        'text'    => [],                                                  //純大量文字欄位
-        'json'    => [],                                                  //內容為 json 格式的欄位
-        'pass'    => [],                                                  //不予過濾的欄位
-        'explode' => [],                                                  //用分號隔開的欄位
+        'int'     => ['booking_id', 'item_id', 'section_id', 'waiting', 'approver'], //數字類的欄位
+        'html'    => [],                                                             //含網頁語法的欄位（所見即所得的內容）
+        'text'    => [],                                                             //純大量文字欄位
+        'json'    => [],                                                             //內容為 json 格式的欄位
+        'pass'    => [],                                                             //不予過濾的欄位
+        'explode' => [],                                                             //用分號隔開的欄位
     ];
 
     //取得 Tad_booking_data::get_all 所有資料陣列
@@ -42,7 +42,6 @@ class Tad_booking_data
         while ($data = $xoopsDB->fetchArray($result)) {
 
             //將 uid 編號轉換成使用者姓名（或帳號）
-            // $data['approver_name'] = Utility::get_name_by_uid($data['approver']);
 
             $data = Tools::filter_all_data($filter, $data, self::$filter_arr);
 
@@ -53,10 +52,20 @@ class Tad_booking_data
             if (in_array('week', $other_arr) || in_array('all', $other_arr)) {
                 $data['week'] = date('w', strtotime($data['booking_date']));
             }
-
             $new_key            = $key_name ? $data[$key_name] : $i;
             $data_arr[$new_key] = $get_value ? $data[$get_value] : $data;
             $i++;
+        }
+
+        if (in_array('who', $other_arr) || in_array('all', $other_arr)) {
+            $booking_id_arr = array_column($data_arr, 'booking_id');
+            if ($booking_id_arr) {
+                $booking_ids = implode(',', $booking_id_arr);
+                $booking     = Tad_booking::get_all(["`id` IN($booking_ids)"], [], [], [], 'id');
+                foreach ($data_arr as $key => $value) {
+                    $data_arr[$key]['who'] = $booking[$value['booking_id']];
+                }
+            }
         }
 
         if ($amount) {
@@ -122,6 +131,7 @@ class Tad_booking_data
         $sql = "INSERT INTO `" . $xoopsDB->prefix("tad_booking_data") . "` (
             `booking_id`,
             `booking_date`,
+            `item_id`,
             `section_id`,
             `waiting`,
             `status`,
@@ -130,6 +140,7 @@ class Tad_booking_data
         ) VALUES(
             '{$booking_id}',
             '{$booking_date}',
+            '{$item_id}',
             '{$section_id}',
             '{$waiting}',
             '{$status}',
@@ -175,6 +186,7 @@ class Tad_booking_data
             $sql = "UPDATE `" . $xoopsDB->prefix("tad_booking_data") . "` SET
             `booking_id` = '{$booking_id}',
             `booking_date` = '{$booking_date}',
+            `item_id` = '{$item_id}',
             `section_id` = '{$section_id}',
             `waiting` = '{$waiting}',
             `status` = '{$status}',
@@ -183,7 +195,6 @@ class Tad_booking_data
             WHERE 1 $and";
         }
         $xoopsDB->queryF($sql) or Utility::web_error($sql);
-
     }
 
     //刪除 Tad_booking_data::destroy 某筆資料資料
@@ -210,7 +221,6 @@ class Tad_booking_data
         $sql = "DELETE FROM `" . $xoopsDB->prefix("tad_booking_data") . "`
         WHERE 1 $and";
         $xoopsDB->queryF($sql) or Utility::web_error($sql);
-
     }
 
     //自動取得 Tad_booking_data::max_waiting 的最新排序
@@ -223,103 +233,20 @@ class Tad_booking_data
         return ++$waiting;
     }
 
-    // //列出所有 Tad_booking_data::index 資料
-    // public static function index($where_arr = [], $other_arr = [], $view_cols = [], $order_arr = [], $amount = '')
-    // {
-    //     global $xoopsTpl, $xoTheme;
+    //
+    public static function count($booking_id = '')
+    {
+        global $xoopsDB;
+        Tools::chk_is_adm('can_booking', '', __FILE__, __LINE__);
 
-    //     if ($amount) {
-    //         list($all_tad_booking_data, $total, $bar) = self::get_all($where_arr, $other_arr, $view_cols, $order_arr, null, null, 'read', $amount);
-    //         $xoopsTpl->assign('bar', $bar);
-    //         $xoopsTpl->assign('total', $total);
-    //     } else {
-    //         $all_tad_booking_data = self::get_all($where_arr, $other_arr, $view_cols, $order_arr);
-    //     }
+        if (empty($booking_id)) {
+            return;
+        }
 
-    //     $xoopsTpl->assign('all_tad_booking_data', $all_tad_booking_data);
-    //     Utility::test($all_tad_booking_data, 'all_tad_booking_data');
-
-    //     //刪除確認的JS
-    //     $SweetAlert = new SweetAlert();
-    //     $SweetAlert->render('tad_booking_data_destroy_func', "{$_SERVER['PHP_SELF']}?op=tad_booking_data_destroy&booking_date={$booking_date}&booking_id={$booking_id}&section_id=", "section_id");
-
-    //     $xoTheme->addStylesheet('modules/tadtools/css/vtb.css');
-    // }
-
-    // //以流水號秀出某筆 Tad_booking_data::show 資料內容 Tad_booking_data::show()
-    // public static function show($where_arr = [], $other_arr = [], $mode = '')
-    // {
-    //     global $xoopsTpl;
-
-    //     if (empty($where_arr)) {
-    //         redirect_header($_SERVER['HTTP_REFERER'], 3, "無查詢條件：" . __FILE__ . __LINE__);
-    //     }
-
-    //     $all = self::get($where_arr, $other_arr);
-    //     if (empty($all)) {
-    //         return false;
-    //     }
-
-    //     foreach ($all as $key => $value) {
-    //         $value     = Tools::filter($key, $value, 'read', self::$filter_arr);
-    //         $all[$key] = $value;
-    //         $$key      = $value;
-    //     }
-
-    //     //將 uid 編號轉換成使用者姓名（或帳號）
-    //     $approver_name = Utility::get_name_by_uid($approver);
-    //     $xoopsTpl->assign('approver_name', $approver_name);
-
-    //     $SweetAlert = new SweetAlert();
-    //     $SweetAlert->render('tad_booking_data_destroy_func', "{$_SERVER['PHP_SELF']}?op=tad_booking_data_destroy&booking_date={$booking_date}&booking_id={$booking_id}&section_id=", "section_id");
-
-    //     if ($mode == "return") {
-    //         return $all;
-    //     } elseif ($mode == "assign_all") {
-    //         $xoopsTpl->assign('tad_booking_data', $all);
-    //     } else {
-    //         foreach ($all as $key => $value) {
-    //             $xoopsTpl->assign($key, $value);
-    //         }
-    //     }
-    // }
-
-    // //Tad_booking_data::create 編輯表單
-    // public static function create()
-    // {
-    //     global $xoopsTpl, $xoopsUser;
-    //     Tools::chk_is_adm('can_booking', '', __FILE__, __LINE__);
-
-    //     //抓取預設值
-    //     $tad_booking_data = (! empty($booking_date) and ! empty($booking_id) and ! empty($section_id)) ? self::get(['booking_date' => $booking_date, 'booking_id' => $booking_id, 'section_id' => $section_id]) : [];
-
-    //     //預設值設定
-
-    //     $def['booking_id']   = $booking_id;
-    //     $def['booking_date'] = $booking_date;
-    //     $def['section_id']   = $section_id;
-    //     $user_uid            = $xoopsUser ? $xoopsUser->uid() : "";
-    //     $def['approver']     = $user_uid;
-    //     $def['pass_date']    = date("Y-m-d H:i:s");
-
-    //     if (empty($tad_booking_data)) {
-    //         $tad_booking_data = $def;
-    //     }
-
-    //     foreach ($tad_booking_data as $key => $value) {
-    //         $value = Tools::filter($key, $value, 'edit', self::$filter_arr);
-    //         $$key  = isset($tad_booking_data[$key]) ? $tad_booking_data[$key] : $def[$key];
-    //         $xoopsTpl->assign($key, $value);
-    //     }
-
-    //     $op = (! empty($booking_date) and ! empty($booking_id) and ! empty($section_id)) ? "tad_booking_data_update" : "tad_booking_data_store";
-    //     $xoopsTpl->assign('next_op', $op);
-
-    //     //套用formValidator驗證機制
-    //     $formValidator = new FormValidator("#myForm", true);
-    //     $formValidator->render();
-
-    //     //加入Token安全機制
-    //     Utility::token_form();
-    // }
+        $sql = "SELECT COUNT(*) FROM `" . $xoopsDB->prefix("tad_booking_data") . "`
+        WHERE `booking_id`='{$booking_id}'";
+        $result      = $xoopsDB->queryF($sql) or Utility::web_error($sql);
+        list($count) = $xoopsDB->fetchRow($result);
+        return $count;
+    }
 }

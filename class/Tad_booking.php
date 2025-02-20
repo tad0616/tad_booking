@@ -1,9 +1,6 @@
 <?php
 namespace XoopsModules\Tad_booking;
 
-use XoopsModules\Tadtools\FormValidator;
-use XoopsModules\Tadtools\My97DatePicker;
-use XoopsModules\Tadtools\SweetAlert;
 use XoopsModules\Tadtools\Utility;
 use XoopsModules\Tad_booking\Tools;
 
@@ -11,36 +8,13 @@ class Tad_booking
 {
     // 過濾用變數的設定
     public static $filter_arr = [
-        'int'     => ['id', 'uid'], //數字類的欄位
-        'html'    => [],            //含網頁語法的欄位（所見即所得的內容）
-        'text'    => [],            //純大量文字欄位
-        'json'    => ['info'],      //內容為 json 格式的欄位
-        'pass'    => [],            //不予過濾的欄位
-        'explode' => [],            //用分號隔開的欄位
+        'int'     => ['id', 'uid'],     //數字類的欄位
+        'html'    => [],                //含網頁語法的欄位（所見即所得的內容）
+        'text'    => [],                //純大量文字欄位
+        'json'    => ['info', 'batch'], //內容為 json 格式的欄位
+        'pass'    => [],                //不予過濾的欄位
+        'explode' => [],                //用分號隔開的欄位
     ];
-
-    //列出所有 tad_booking 資料
-    public static function index($where_arr = [], $other_arr = [], $view_cols = [], $order_arr = [], $amount = '')
-    {
-        global $xoopsTpl, $xoTheme;
-
-        if ($amount) {
-            list($all_tad_booking, $total, $bar) = self::get_all($where_arr, $other_arr, $view_cols, $order_arr, null, null, 'read', $amount);
-            $xoopsTpl->assign('bar', $bar);
-            $xoopsTpl->assign('total', $total);
-        } else {
-            $all_tad_booking = self::get_all($where_arr, $other_arr, $view_cols, $order_arr);
-        }
-
-        $xoopsTpl->assign('all_tad_booking', $all_tad_booking);
-        Utility::test($all_tad_booking, 'all_tad_booking');
-
-        //刪除確認的JS
-        $SweetAlert = new SweetAlert();
-        $SweetAlert->render('tad_booking_destroy_func', "{$_SERVER['PHP_SELF']}?op=tad_booking_destroy&id=", "id");
-
-        $xoTheme->addStylesheet('modules/tadtools/css/vtb.css');
-    }
 
     //取得tad_booking所有資料陣列
     public static function get_all($where_arr = [], $other_arr = [], $view_cols = [], $order_arr = [], $key_name = false, $get_value = '', $filter = 'read', $amount = '')
@@ -92,44 +66,6 @@ class Tad_booking
         }
     }
 
-    //以流水號秀出某筆 tad_booking 資料內容 Tad_booking::show()
-    public static function show($where_arr = [], $other_arr = [], $mode = '')
-    {
-        global $xoopsTpl;
-
-        if (empty($where_arr)) {
-            redirect_header($_SERVER['HTTP_REFERER'], 3, "無查詢條件：" . __FILE__ . __LINE__);
-        }
-
-        $all = self::get($where_arr, $other_arr);
-        if (empty($all)) {
-            return false;
-        }
-
-        foreach ($all as $key => $value) {
-            $value     = Tools::filter($key, $value, 'read', self::$filter_arr);
-            $all[$key] = $value;
-            $$key      = $value;
-        }
-
-        //將 uid 編號轉換成使用者姓名（或帳號）
-        $uid_name = Utility::get_name_by_uid($uid);
-        $xoopsTpl->assign('uid_name', $uid_name);
-
-        $SweetAlert = new SweetAlert();
-        $SweetAlert->render('tad_booking_destroy_func', "{$_SERVER['PHP_SELF']}?op=tad_booking_destroy&id=", "id");
-
-        if ($mode == "return") {
-            return $all;
-        } elseif ($mode == "assign_all") {
-            $xoopsTpl->assign('tad_booking', $all);
-        } else {
-            foreach ($all as $key => $value) {
-                $xoopsTpl->assign($key, $value);
-            }
-        }
-    }
-
     //以流水號取得某筆 tad_booking 資料
     public static function get($where_arr = [], $other_arr = [], $filter = 'read', $only_key = '')
     {
@@ -159,46 +95,6 @@ class Tad_booking
         } else {
             return $data;
         }
-    }
-
-    //tad_booking 編輯表單
-    public static function create($id = '')
-    {
-        global $xoopsTpl, $xoopsDB;
-        Tools::chk_is_adm('can_booking', '', __FILE__, __LINE__);
-
-        //抓取預設值
-        $tad_booking = (! empty($id)) ? self::get(['id' => $id]) : [];
-
-        //預設值設定
-
-        $def['id']           = $id;
-        $user_uid            = $xoopsUser ? $xoopsUser->uid() : "";
-        $def['uid']          = $user_uid;
-        $def['booking_time'] = date("Y-m-d H:i:s");
-        $def['start_date']   = date("Y-m-d");
-        $def['end_date']     = date("Y-m-d");
-
-        if (empty($tad_booking)) {
-            $tad_booking = $def;
-        }
-
-        foreach ($tad_booking as $key => $value) {
-            $value = Tools::filter($key, $value, 'edit', self::$filter_arr);
-            $$key  = isset($tad_booking[$key]) ? $tad_booking[$key] : $def[$key];
-            $xoopsTpl->assign($key, $value);
-        }
-
-        $op = (! empty($id)) ? "tad_booking_update" : "tad_booking_store";
-        $xoopsTpl->assign('next_op', $op);
-
-        //套用formValidator驗證機制
-        $formValidator = new FormValidator("#myForm", true);
-        $formValidator->render();
-
-        My97DatePicker::render();
-        //加入Token安全機制
-        Utility::token_form();
     }
 
     //新增資料到 tad_booking Tad_booking::store()
@@ -231,14 +127,16 @@ class Tad_booking
             `content`,
             `start_date`,
             `end_date`,
-            `info`
+            `info`,
+            `batch`
         ) VALUES(
             '{$uid}',
             '{$booking_time}',
             '{$content}',
             '{$start_date}',
             '{$end_date}',
-            '{$info}'
+            '{$info}',
+            '{$batch}'
         )";
         $xoopsDB->queryF($sql) or Utility::web_error($sql);
 
@@ -286,7 +184,8 @@ class Tad_booking
             `content` = '{$content}',
             `start_date` = '{$start_date}',
             `end_date` = '{$end_date}',
-            `info` = '{$info}'
+            `info` = '{$info}',
+            `batch` = '{$batch}'
             WHERE 1 $and";
         }
 
@@ -295,7 +194,7 @@ class Tad_booking
         return $where_arr['id'];
     }
 
-    //刪除tad_booking某筆資料資料
+    //刪除 Tad_booking::destroy 某筆資料資料
     public static function destroy($id = '', $booking_date = '')
     {
         global $xoopsDB;
@@ -305,18 +204,18 @@ class Tad_booking
             return;
         }
 
-        $and = '';
-        if ($id) {
-            $and .= "AND `id` = '$id'";
-        }
-        if ($booking_date) {
-            $and .= "AND `start_end` = '$booking_date' AND `end_end` = '$booking_date'";
-        }
+        $tad_booking_data_count = Tad_booking_data::count($id);
+        if ($tad_booking_data_count == 0) {
+            $and = '';
+            if ($id) {
+                $and .= " AND `id` = '$id'";
+            }
+            if ($booking_date) {
+                $and .= " AND `start_date` = '$booking_date' AND `end_date` = '$booking_date'";
+            }
 
-        $sql = "DELETE FROM `" . $xoopsDB->prefix("tad_booking") . "`
-        WHERE 1 $and";
-        $xoopsDB->queryF($sql) or Utility::web_error($sql);
-
+            $sql = "DELETE FROM `" . $xoopsDB->prefix("tad_booking") . "` WHERE 1 $and";
+            $xoopsDB->queryF($sql) or Utility::web_error($sql);
+        }
     }
-
 }

@@ -19,7 +19,6 @@
 </script>
 <h2>「<{$title}>」<{$smarty.const._MD_TADBOOKING_SECTION_SETUP}></h2>
 
-
 <div id="save_msg"></div>
 <div class="row">
   <div class="col-sm-7">

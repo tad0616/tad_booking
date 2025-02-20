@@ -1,3 +1,23 @@
 <?php
-
-
+define('_MB_TADBOOKING_TAB_TYPE', '選單呈現類型');
+define('_MB_TADBOOKING_ACCORDION', '伸縮頁籤');
+define('_MB_TADBOOKING_DEFAULT', '水平頁籤');
+define('_MB_TADBOOKING_VERTICAL', '垂直頁籤');
+define('_MB_TADBOOKING_UID', '預約者');
+define('_MB_TADBOOKING_SECTION', '節次');
+define('_MB_TADBOOKING_EMPTY', '本日無預約');
+define('_MB_TADBOOKING_MORE', '觀看所有預約');
+define("_MB_TADBOOKING_W0", "日");
+define("_MB_TADBOOKING_W1", "一");
+define("_MB_TADBOOKING_W2", "二");
+define("_MB_TADBOOKING_W3", "三");
+define("_MB_TADBOOKING_W4", "四");
+define("_MB_TADBOOKING_W5", "五");
+define("_MB_TADBOOKING_W6", "六");
+define("_MB_TADBOOKING_NO", "可預約");
+define("_MB_TADBOOKING_NO_RECORD", "無預約");
+define("_MB_TADBOOKING_PASS", "通過");
+define("_MB_TADBOOKING_APPROVING", "待審中");
+define("_MB_TADBOOKING_BOOKED", "已預約");
+define('_MB_TADBOOKING_STATUS', '預約情況');
+define('_MB_TADBOOKING_FONT_SIZE', '文字大小');

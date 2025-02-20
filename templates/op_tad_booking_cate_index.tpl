@@ -63,9 +63,9 @@
 
                     <div class="mt-3">
                         <{if $smarty.session.tad_booking_adm|default:false}>
-                            <{if !$data.item_arr}>
-                                <a href="javascript:tad_booking_cate_destroy_func(<{$data.id}>);" class="btn btn-sm btn-danger <{if isset($data.items) && $data.items|@count > 0}>disabled<{/if}>" title="<{$smarty.const._TAD_DEL}>"><i class="fa fa-trash"></i> <{$smarty.const._MD_TADBOOKING_DEL_CATE|sprintf:$data.title}></a>
-                            <{/if}>
+
+                                <a href="javascript:tad_booking_cate_destroy_func(<{$data.id}>);" class="btn btn-sm btn-danger <{if $data.item_arr}>disabled<{/if}>" title="<{if $data.item_arr}><{$smarty.const._MD_TADBOOKING_CANT_DELETE}><{else}><{$smarty.const._MD_TADBOOKING_DEL_CATE|sprintf:$data.title}><{/if}>"><i class="fa fa-trash"></i> <{$smarty.const._MD_TADBOOKING_DEL_CATE|sprintf:$data.title}></a>
+
                             <a href="<{$xoops_url}>/modules/tad_booking/manager.php?op=tad_booking_cate_edit&id=<{$data.id}>" class="btn btn-sm btn-warning" title="<{$smarty.const._TAD_EDIT}>"><i class="fa fa-pencil"></i> <{$smarty.const._MD_TADBOOKING_EDIT_CATE|sprintf:$data.title}></a>
                         <{/if}>
                     </div>

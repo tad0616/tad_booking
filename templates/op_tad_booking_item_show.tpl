@@ -11,10 +11,10 @@
 
 <div class="alert alert-warning text-center py-1 px-5 my-3 mx-auto">
     <{if $smarty.session.tad_booking_adm|default:false}>
-        <a href="javascript:tad_booking_item_destroy_func(<{$id}>);" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="<{$smarty.const._TAD_DEL}><{$id}>"><i class="fa fa-times" aria-hidden="true"></i></a>
+        <a href="javascript:tad_booking_item_destroy_func(<{$id}>);" class="btn btn-sm btn-danger <{if $enable}>disabled<{/if}>" data-bs-toggle="tooltip" title="<{$smarty.const._MD_TADBOOKING_DEL|sprintf:$title}>"><i class="fa fa-times" aria-hidden="true"></i></a>
     <{/if}>
     <{if $smarty.session.tad_booking_adm|default:false}>
-        <a href="<{$xoops_url}>/modules/tad_booking/manager.php?op=tad_booking_item_edit&item_id=<{$id}>" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="<{$smarty.const._TAD_EDIT}>"><i class="fa fa-pencil" aria-hidden="true"></i> <{$smarty.const._TAD_EDIT}><{$title}></a>
+        <a href="<{$xoops_url}>/modules/tad_booking/manager.php?op=tad_booking_item_edit&item_id=<{$id}>" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="<{$smarty.const._MD_TADBOOKING_EDIT|sprintf:$title}>"><i class="fa fa-pencil" aria-hidden="true"></i> <{$smarty.const._MD_TADBOOKING_EDIT|sprintf:$title}></a>
         <a href="<{$xoops_url}>/modules/tad_booking/manager.php?cate_id=<{$cate_id}>&op=tad_booking_item_create" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="<{$smarty.const._TAD_ADD}>"><i class="fa fa-plus" aria-hidden="true"></i> <{$smarty.const._ADD}><{$cate.title}></a>
     <{/if}>
     <i class="fa-regular fa-calendar-days"></i> <{$smarty.const._MD_TADBOOKING_ITEM_START}><{$smarty.const._TAD_FOR}><{$start}>

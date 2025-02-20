@@ -1,4 +1,5 @@
 <?php
+
 namespace XoopsModules\Tad_booking;
 
 use XoopsModules\Tadtools\Bootstrap3Editable;
@@ -23,29 +24,6 @@ class Tad_booking_item
         'explode' => ['approval'],              //用分號隔開的欄位
     ];
 
-    //列出所有 tad_booking_item 資料
-    public static function index($where_arr = [], $other_arr = [], $view_cols = [], $order_arr = [], $amount = '')
-    {
-        global $xoopsTpl, $xoTheme;
-
-        if ($amount) {
-            list($all_tad_booking_item, $total, $bar) = self::get_all($where_arr, $other_arr, $view_cols, $order_arr, null, null, 'read', $amount);
-            $xoopsTpl->assign('bar', $bar);
-            $xoopsTpl->assign('total', $total);
-        } else {
-            $all_tad_booking_item = self::get_all($where_arr, $other_arr, $view_cols, $order_arr);
-        }
-
-        $xoopsTpl->assign('all_tad_booking_item', $all_tad_booking_item);
-        Utility::test($all_tad_booking_item, 'all_tad_booking_item');
-
-        //刪除確認的JS
-        $SweetAlert = new SweetAlert();
-        $SweetAlert->render('tad_booking_item_destroy_func', "{$_SERVER['PHP_SELF']}?op=tad_booking_item_destroy&id=", "id");
-
-        Utility::get_jquery(true);
-        $xoTheme->addStylesheet('modules/tadtools/css/vtb.css');
-    }
 
     //取得tad_booking_item所有資料陣列
     public static function get_all($where_arr = [], $other_arr = [], $view_cols = [], $order_arr = [], $key_name = false, $get_value = '', $filter = 'read', $amount = '')
@@ -77,9 +55,9 @@ class Tad_booking_item
                 $data[$item . '_arr'] = explode(',', $data[$item]);
             }
 
-            // if (in_array('xxx', $other_arr) || in_array('all', $other_arr)) {
-            //     $data['xxx'] = ooo::get_all();
-            // }
+            if (in_array('sections', $other_arr) || in_array('all', $other_arr)) {
+                $data['sections'] = Tad_booking_section::get_all(['item_id' => $data['id']], ['week_arr'], [], ['sort' => 'ASC'], 'id');
+            }
 
             $new_key            = $key_name ? $data[$key_name] : $i;
             $data_arr[$new_key] = $get_value ? $data[$get_value] : $data;
@@ -189,48 +167,24 @@ class Tad_booking_item
                     $data['item_section_count'][$id]['title'] = $item['title'];
                     $data['item_section_count'][$id]['item']  = $item;
                 }
-
             }
         }
 
         if (in_array('week_dates', $other_arr) || in_array('all', $other_arr)) {
-            // 获取当前日期和星期几
-            $selected_date = isset($_GET['date']) ? new \DateTime($_GET['date']) : new \DateTime();
-            $week          = $selected_date->format('w'); // 0 (Sunday) to 6 (Saturday)
-            $startOfWeek   = clone $selected_date;
-            $startOfWeek->modify('-' . $week . ' days');
-
-            // 生成本周的日期
-            $week_dates = [];
-            for ($i = 0; $i < 7; $i++) {
-                $week_dates[] = $startOfWeek->format('Y-m-d');
-                $startOfWeek->modify('+1 day');
+            $week_data = Tools::findDatesByTargetDay($_GET['date']);
+            foreach ($week_data as $key => $value) {
+                $data[$key]      = $value;
             }
 
-            // 計算上一週和下一週的起始日期
-            $prev_week_start = clone $selected_date;
-            $prev_week_start->modify('-7 days')->modify('-' . $week . ' days')->format('Y-m-d');
-
-            $next_week_start = clone $selected_date;
-            $next_week_start->modify('+7 days')->modify('-' . $week . ' days')->format('Y-m-d');
-
-            $data['week_dates']      = $week_dates;
-            $data['prev_week_start'] = $prev_week_start->format('Y-m-d');
-            $data['next_week_start'] = $next_week_start->format('Y-m-d');
-            $data['selected_date']   = $selected_date->format('Y-m-d');
-            // $data['tomorrow']        = strtotime('+1 day');
-            $data['today']        = strtotime('today');
-            $data['chinese_week'] = Tad_booking_section::$chinese_week;
-
             // 找出該週的預約
-            list($data['booking_arr'], $data['first_booking']) = Tools::booking_arr($week_dates[0], $week_dates[6]);
+            list($data['booking_arr'], $data['ok_booking']) = Tools::booking_arr($data['week_dates'][0], $data['week_dates'][6]);
         }
 
         if (in_array('booking_arr', $other_arr) || in_array('all', $other_arr)) {
             if ($_REQUEST['start_date'] and $_REQUEST['end_date']) {
-                list($data['booking_arr'], $data['first_booking']) = Tools::booking_arr($_REQUEST['start_date'], $_REQUEST['end_date']);
+                list($data['booking_arr'], $data['ok_booking']) = Tools::booking_arr($_REQUEST['start_date'], $_REQUEST['end_date']);
             } else {
-                $data['booking_arr'] = $data['first_booking'] = [];
+                $data['booking_arr'] = $data['ok_booking'] = [];
             }
             $data['chinese_week'] = Tad_booking_section::$chinese_week;
         }
@@ -312,7 +266,6 @@ class Tad_booking_item
             $approval_arr = explode(",", $approval);
             if (in_array($uid, $approval_arr)) {
                 $to_arr[$uid] = "{$name} ({$uname})";
-
             } else {
                 $from_arr[$uid] = "{$name} ({$uname})";
             }
@@ -484,5 +437,4 @@ class Tad_booking_item
         list($sort) = $xoopsDB->fetchRow($result);
         return ++$sort;
     }
-
 }

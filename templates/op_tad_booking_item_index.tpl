@@ -90,8 +90,8 @@
 
                 <{if $smarty.session.tad_booking_adm|default:false}>
                     <li class="vm c w10">
-                        <a href="javascript:tad_booking_item_destroy_func(<{$data.id}>);" class="btn btn-sm btn-xs btn-danger" title="<{$smarty.const._TAD_DEL}>"><i class="fa fa-trash"></i></a>
-                        <a href="<{$xoops_url}>/modules/tad_booking/manager.php?op=tad_booking_item_show&id=<{$data.id}>" class="btn btn-sm btn-xs btn-warning" title="<{$smarty.const._TAD_EDIT}>"><i class="fa fa-pencil"></i></a>
+                        <a href="javascript:tad_booking_item_destroy_func(<{$data.id}>);" class="btn btn-sm btn-xs btn-danger <{if $data.enable}>disabled<{/if}>" title="<{$smarty.const._MD_TADBOOKING_DEL|sprintf:$data.title}>"><i class="fa fa-trash"></i></a>
+                        <a href="<{$xoops_url}>/modules/tad_booking/manager.php?op=tad_booking_item_show&id=<{$data.id}>" class="btn btn-sm btn-xs btn-warning" title="<{$smarty.const._MD_TADBOOKING_EDIT|sprintf:$data.title}>"><i class="fa fa-pencil"></i></a>
                         <i class="fa fa-sort" aria-hidden="true" title="$tad_sortable"></i>
                     </li>
                 <{/if}>
