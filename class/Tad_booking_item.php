@@ -1,8 +1,8 @@
 <?php
-
 namespace XoopsModules\Tad_booking;
 
 use XoopsModules\Tadtools\Bootstrap3Editable;
+use XoopsModules\Tadtools\CkEditor;
 use XoopsModules\Tadtools\FormValidator;
 use XoopsModules\Tadtools\My97DatePicker;
 use XoopsModules\Tadtools\SweetAlert;
@@ -17,13 +17,12 @@ class Tad_booking_item
     // 過濾用變數的設定
     public static $filter_arr = [
         'int'     => ['id', 'cate_id', 'sort'], //數字類的欄位
-        'html'    => [],                        //含網頁語法的欄位（所見即所得的內容）
-        'text'    => ['desc'],                  //純大量文字欄位
+        'html'    => ['desc'],                  //含網頁語法的欄位（所見即所得的內容）
+        'text'    => [],                        //純大量文字欄位
         'json'    => ['info'],                  //內容為 json 格式的欄位
         'pass'    => [],                        //不予過濾的欄位
         'explode' => ['approval'],              //用分號隔開的欄位
     ];
-
 
     //取得tad_booking_item所有資料陣列
     public static function get_all($where_arr = [], $other_arr = [], $view_cols = [], $order_arr = [], $key_name = false, $get_value = '', $filter = 'read', $amount = '')
@@ -96,15 +95,6 @@ class Tad_booking_item
         $cate = Tad_booking_cate::get(['id' => $cate_id]);
         $xoopsTpl->assign('cate', $cate);
 
-        //上傳工具
-        $TadUpFiles = new TadUpFiles("tad_booking");
-        $TadUpFiles->set_col("tad_booking_item_id", $id);
-        //$TadUpFiles->set_dir('show_width', '150px');
-        //$TadUpFiles->set_dir('show_height', '150px');
-        //$TadUpFiles->set_dir('subdir', "");
-        $show_id_files = $TadUpFiles->show_files('tad_booking_item_files', true, 'thumb', false, false, null, null, false);
-        $xoopsTpl->assign('show_id_files', $show_id_files);
-
         $SweetAlert = new SweetAlert();
         $SweetAlert->render('tad_booking_item_destroy_func', "manager.php?op=tad_booking_item_destroy&id=", "id");
 
@@ -146,6 +136,11 @@ class Tad_booking_item
         $data   = $xoopsDB->fetchArray($result);
         $data   = Tools::filter_all_data($filter, $data, self::$filter_arr);
 
+        //上傳工具
+        $TadUpFiles = new TadUpFiles("tad_booking");
+        $TadUpFiles->set_col("tad_booking_item_id", $data['id']);
+        $data['files'] = $TadUpFiles->show_files('tad_booking_item_files', true, 'thumb', false, false, null, null, false);
+
         foreach ($data['info'] as $approval_uid => $approver) {
             $data['approval_name_arr'][$approval_uid] = $approver['name'];
         }
@@ -173,7 +168,7 @@ class Tad_booking_item
         if (in_array('week_dates', $other_arr) || in_array('all', $other_arr)) {
             $week_data = Tools::findDatesByTargetDay($_GET['date']);
             foreach ($week_data as $key => $value) {
-                $data[$key]      = $value;
+                $data[$key] = $value;
             }
 
             // 找出該週的預約
@@ -277,6 +272,12 @@ class Tad_booking_item
         $xoopsTpl->assign('tmt_box', $tmt_box);
 
         My97DatePicker::render();
+
+        $CkEditor = new CkEditor("tad_booking", "desc", $desc);
+        $CkEditor->setHeight(150);
+        $CkEditor->setToolbarSet('tadSimple');
+        $editor = $CkEditor->render();
+        $xoopsTpl->assign('editor', $editor);
     }
 
     //新增資料到 tad_booking_item Tad_booking_item::store()

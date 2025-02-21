@@ -1,5 +1,5 @@
 <{if $cates|default:false}>
-    <select name="item_id" id="item_id" class="form-control form-select" onchange="location.href='<{$smarty.server.PHP_SELF}>?<{if $and_date|default:0}>start_date='+document.getElementById('startDate').value+'&end_date='+document.getElementById('endDate').value+'&content='+document.getElementById('content').value+'&<{/if}>item_id='+this.value;">
+    <select name="item_id" id="item_id" class="form-control form-select" onchange="location.href='<{$smarty.server.PHP_SELF}>?<{if $and_date|default:0}>start_date='+document.getElementById('startDate').value+'&end_date='+document.getElementById('endDate').value+'&content='+document.getElementById('content').value+'&<{/if}>item_id='+this.value+'#xoops_contents';">
         <option value=""><{$smarty.const._MD_TADBOOKING_SELECT_OPTION}></option>
         <{foreach from=$cates key=cate_id item=cate}>
             <{if $cate.items|@count > 0}>

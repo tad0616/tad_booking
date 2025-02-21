@@ -28,6 +28,10 @@
     <{/if}>
 </div>
 
+
+<{include file="$xoops_rootpath/modules/tad_booking/templates/op_tad_booking_section_create.tpl"}>
+
+
 <{if $desc|default:false}>
     <div class="my-border">
         <{$desc}>
@@ -35,5 +39,4 @@
 <{/if}>
 
 
-
-<{include file="$xoops_rootpath/modules/tad_booking/templates/op_tad_booking_section_create.tpl"}>
+<{$files|default:false}>

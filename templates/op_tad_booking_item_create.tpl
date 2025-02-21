@@ -66,7 +66,7 @@
             <label class="control-label form-label">
                 <{$smarty.const._MD_TADBOOKING_ITEM_DESC}>
             </label>
-            <textarea name="desc" rows=2 id="desc" class="form-control " placeholder="<{$smarty.const._MD_TADBOOKING_ITEM_DESC}>"><{$desc}></textarea>
+            <{$editor}>
         </div>
     </div>
 

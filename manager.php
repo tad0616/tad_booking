@@ -6,7 +6,6 @@ use XoopsModules\Tad_booking\Tad_booking_cate;
 use XoopsModules\Tad_booking\Tad_booking_item;
 use XoopsModules\Tad_booking\Tad_booking_section;
 use XoopsModules\Tad_booking\Tools;
-
 /*-----------引入檔案區--------------*/
 
 require_once __DIR__ . '/header.php';
@@ -28,88 +27,85 @@ $to_item_id = Request::getInt('to_item_id');
 /*-----------執行動作判斷區----------*/
 switch ($op) {
 
-        //新增資料
+    //新增資料
     case 'tad_booking_cate_store':
         $id = Tad_booking_cate::store();
         header("location: {$_SERVER['PHP_SELF']}?id=$id");
         exit;
 
-        //更新資料
+    //更新資料
     case 'tad_booking_cate_update':
         $where_arr['id'] = $id;
         Tad_booking_cate::update($where_arr);
         header("location: {$_SERVER['PHP_SELF']}?id=$id");
         exit;
 
-        //新增用表單
+    //新增用表單
     case 'tad_booking_cate_create':
         Tad_booking_cate::create();
         break;
 
-        //修改用表單
+    //修改用表單
     case 'tad_booking_cate_edit':
         Tad_booking_cate::create($id);
         $op = 'tad_booking_cate_create';
         break;
 
-        //刪除資料
+    //刪除資料
     case 'tad_booking_cate_destroy':
         Tad_booking_cate::destroy($id);
         header("location: {$_SERVER['PHP_SELF']}");
         exit;
 
-
-        //新增資料
+    //新增資料
     case 'tad_booking_item_store':
         $item_id = Tad_booking_item::store();
         header("location: {$_SERVER['PHP_SELF']}?op=tad_booking_item_show&item_id=$item_id");
         exit;
 
-        //更新資料
+    //更新資料
     case 'tad_booking_item_update':
         $where_arr['id'] = $id;
         Tad_booking_item::update($where_arr);
         header("location: {$_SERVER['PHP_SELF']}?op=tad_booking_item_show&item_id=$id");
         exit;
 
-        //下載檔案
+    //下載檔案
     case 'tufdl':
         $TadUpFiles = new TadUpFiles("tad_booking");
         $TadUpFiles->add_file_counter($files_sn, false);
         exit;
 
-        //新增用表單
+    //新增用表單
     case 'tad_booking_item_create':
         Tad_booking_item::create('', $cate_id);
         break;
 
-        //修改用表單
+    //修改用表單
     case 'tad_booking_item_edit':
         Tad_booking_item::create($item_id);
         $op = 'tad_booking_item_create';
         break;
 
-        //刪除資料
+    //刪除資料
     case 'tad_booking_item_destroy':
         Tad_booking_item::destroy($id);
         header("location: {$_SERVER['PHP_SELF']}");
         exit;
 
-        //顯示某筆資料
+    //顯示某筆資料
     case 'tad_booking_item_show':
         $where_arr['id'] = $item_id;
         Tad_booking_item::show($where_arr, ['uid_name', 'sections', 'item_section_count']);
         break;
 
-
-        //新增資料
+    //新增資料
     case 'tad_booking_section_store':
         $id = Tad_booking_section::store();
         header("location: {$_SERVER['PHP_SELF']}?op=tad_booking_item_show&item_id=$item_id");
         exit;
 
-
-        //刪除資料
+    //刪除資料
     case 'tad_booking_section_destroy':
         Tad_booking_section::destroy($id);
         header("location: {$_SERVER['PHP_SELF']}?op=tad_booking_item_show&item_id=$item_id");
