@@ -1,0 +1,23 @@
+<?php
+define('_MB_TADBOOKING_TAB_TYPE', 'Menu presentation type');
+define('_MB_TADBOOKING_ACCORDION', 'Telescopic tabs');
+define('_MB_TADBOOKING_DEFAULT', 'Horizontal tabs');
+define('_MB_TADBOOKING_VERTICAL', 'Vertical tabs');
+define('_MB_TADBOOKING_UID', 'Booker');
+define('_MB_TADBOOKING_SECTION', 'Section');
+define('_MB_TADBOOKING_EMPTY', 'No bookings today');
+define('_MB_TADBOOKING_MORE', 'View all bookings');
+define("_MB_TADBOOKING_W0", "Sun");
+define("_MB_TADBOOKING_W1", "Mon");
+define("_MB_TADBOOKING_W2", "Tue");
+define("_MB_TADBOOKING_W3", "Wed");
+define("_MB_TADBOOKING_W4", "Thu");
+define("_MB_TADBOOKING_W5", "Fri");
+define("_MB_TADBOOKING_W6", "Sat");
+define("_MB_TADBOOKING_NO", "Booking Available");
+define("_MB_TADBOOKING_NO_RECORD", "No reservation");
+define("_MB_TADBOOKING_PASS", "PASS");
+define("_MB_TADBOOKING_APPROVING", "Awaiting review");
+define("_MB_TADBOOKING_BOOKED", "Booked");
+define('_MB_TADBOOKING_STATUS', 'Booking status');
+define('_MB_TADBOOKING_FONT_SIZE', 'Text size');
