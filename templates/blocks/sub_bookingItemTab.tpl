@@ -33,7 +33,9 @@
                                             <{assign var="booking_arr" value=$block.booking_arr}>
                                             <{if $booking_arr.$date.$section_id}>
                                                 <{foreach from=$booking_arr.$date.$section_id key=uid item=booking}>
-                                                    <div class="status<{$booking.status}>"><{$booking.info.name}></div>
+                                                    <div class="status<{$booking.status}>">
+                                                        <{if $xoops_isuser}><{$booking.info.name}><{else}><{$smarty.const._MB_TADBOOKING_BOOKED}><{/if}>
+                                                    </div>
                                                 <{/foreach}>
                                             <{elseif $date|strtotime > $smarty.now}>
                                                 <span style="color: #8ba2ad;"><{$smarty.const._MB_TADBOOKING_NO}></span>

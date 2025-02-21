@@ -8,3 +8,4 @@ define('_MA_TADBOOKING_IMPORT_NOTE', '右邊資料數量若不是0，表示tad_b
 define('_MA_TADBOOKING_OLD_TABLE', '原資料表名稱');
 define('_MA_TADBOOKING_NEW_TABLE', '新資料表名稱');
 define('_MA_TADBOOKING_DATA_AMOUNT', '資料數量');
+define('_MA_TADBOOKING_JB_MODULECONFIG', 'jill_booking 偏好設定：');

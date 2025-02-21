@@ -19,6 +19,7 @@ switch ($op) {
         exit;
 
     default:
+
         check_jill_booking();
         $op = 'tad_booking_import';
         break;
@@ -33,16 +34,23 @@ require_once __DIR__ . '/footer.php';
 //列出所有 check_jill_booking 資料
 function check_jill_booking()
 {
-    global $xoopsDB, $xoopsTpl;
+    global $xoopsDB, $xoopsTpl, $xoopsModule;
 
     //取得某模組編號
+    $mid = $xoopsModule->mid();
+    $xoopsTpl->assign('mid', $mid);
 
     $moduleHandler  = xoops_getHandler('module');
     $ThexoopsModule = $moduleHandler->getByDirname('jill_booking');
 
     if ($ThexoopsModule) {
-        $mod_id = $ThexoopsModule->getVar('mid');
+        $jill_booking_mid = $ThexoopsModule->getVar('mid');
         $xoopsTpl->assign('show_error', '0');
+        $xoopsTpl->assign('jill_booking_mid', $jill_booking_mid);
+
+        xoops_loadLanguage('modinfo', 'jill_booking');
+        $jillBookingModuleConfig = Utility::getXoopsModuleConfig('jill_booking');
+        $xoopsTpl->assign('jillBookingModuleConfig', $jillBookingModuleConfig);
     } else {
         $xoopsTpl->assign('show_error', '1');
         $xoopsTpl->assign('msg', _MA_TADBOOKING_NO_NEED_IMPORT);
@@ -87,7 +95,23 @@ function check_jill_booking()
 
 function import_now()
 {
-    global $xoopsDB;
+    global $xoopsDB, $xoopsModule;
+    $mid            = $xoopsModule->mid();
+    $moduleHandler  = xoops_getHandler('module');
+    $ThexoopsModule = $moduleHandler->getByDirname('jill_booking');
+
+    if ($ThexoopsModule) {
+        $jill_booking_mid = $ThexoopsModule->getVar('mid');
+        $sql              = "SELECT  `conf_name`, `conf_value` FROM `" . $xoopsDB->prefix('config') . "` WHERE `conf_modid` = '{$jill_booking_mid}'";
+        $result           = $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while (list($conf_name, $conf_value) = $xoopsDB->fetchRow($result)) {
+            if ($conf_name == 'max_bookingweek') {
+                $conf_name = 'max_booking_week';
+            }
+            $sql = "UPDATE `" . $xoopsDB->prefix('config') . "` SET `conf_value` = '{$conf_value}' WHERE `conf_name` = '{$conf_name}' AND `conf_modid` = '{$mid}'";
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+    }
 
     // 複製 jill_booking 到 tad_booking
     $sql = "
@@ -159,4 +183,6 @@ function import_now()
         }
     }
 
+    unset($_SESSION['can_booking']);
+    unset($_SESSION['can_approve']);
 }

@@ -1,3 +1,9 @@
+<h3><{$smarty.const._MA_TADBOOKING_JB_MODULECONFIG}> (mid: <{$jill_booking_mid}> -> <{$mid}>)</h3>
+<ol>
+    <li><{$smarty.const._MI_JILLBOOKIN_BOOKING_GROUP}>: <{','|implode:$jillBookingModuleConfig.booking_group}></li>
+    <li><{$smarty.const._MI_JILLBOOKIN_MAX_BOOKINGWEEK}>: <{$jillBookingModuleConfig.max_bookingweek}></li>
+    <li><{$smarty.const._MI_JILLBOOKIN_CAN_SEND_MAIL}>: <{$jillBookingModuleConfig.can_send_mail}></li>
+</ol>
 <form action="main.php" method="post">
     <div class="row">
         <div class="col-lg-6">

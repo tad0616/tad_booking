@@ -88,9 +88,11 @@ class Tad_booking_cate
             if (in_array('items_sections', $other_arr) || in_array('all', $other_arr)) {
                 $data['items'] = Tad_booking_item::get_all(['cate_id' => $data['id'], 'enable' => 1, "`start` <= '$today'", "(`end` >= '$today' OR `end` = '0000-00-00')"], [], ['id', 'title', 'approval'], ['sort' => 'ASC'], 'id');
                 $item_ids      = array_keys($data['items']);
-                $sections      = Tad_booking_section::get_all(['`item_id` IN(' . implode(',', $item_ids) . ')'], ['week_arr'], ['id', 'item_id', 'title', 'week'], ['sort' => 'ASC'], 'id');
-                foreach ($sections as $section_id => $section) {
-                    $data['items'][$section['item_id']]['sections'][$section_id] = $section;
+                if ($item_ids) {
+                    $sections = Tad_booking_section::get_all(['`item_id` IN(' . implode(',', $item_ids) . ')'], ['week_arr'], ['id', 'item_id', 'title', 'week'], ['sort' => 'ASC'], 'id');
+                    foreach ($sections as $section_id => $section) {
+                        $data['items'][$section['item_id']]['sections'][$section_id] = $section;
+                    }
                 }
             }
 

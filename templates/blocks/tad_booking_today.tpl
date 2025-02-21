@@ -31,7 +31,9 @@
                                     <{if $block.w|in_array:$section.week_arr}>
                                         <{if $block.booking_data_arr.$section_id}>
                                             <{foreach from=$block.booking_data_arr.$section_id key=waiting item=booking_data}>
-                                                <div><{$booking_data.who.info.name}></div>
+                                                <div>
+                                                    <{if $xoops_isuser}><{$booking_data.who.info.name}><{else}><{$smarty.const._MB_TADBOOKING_BOOKED}><{/if}>
+                                                </div>
                                             <{/foreach}>
                                         <{else}>
                                         <span style="color: #8ba2ad;"><{$smarty.const._MB_TADBOOKING_NO}></span>

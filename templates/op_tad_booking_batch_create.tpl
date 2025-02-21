@@ -2,9 +2,9 @@
     <div class="row g-1 my-3">
         <div class="col-lg-auto">
             <div class="input-group">
-            <input type="text" id="startDate" name="start_date" class="form-control validate[required]" style="width: 8rem;" onclick="WdatePicker({minDate:'<{$minDate}>'<{if !$smarty.session.tad_booking_adm}>, maxDate:'<{$maxDate}>'<{/if}>}})" required value="<{$start_date}>">
+            <input type="text" id="startDate" name="start_date" class="form-control validate[required]" style="width: 8rem;" onclick="WdatePicker({minDate:'<{$minDate}>'<{if !$smarty.session.tad_booking_adm}>, maxDate:'<{$maxDate}>'<{/if}>})" required value="<{$start_date}>">
                 <div class="input-group-prepend input-group-addon">
-                    <span class="input-group-text">起</span>
+                    <span class="input-group-text"><{$smarty.const._MD_TADBOOKING_START}></span>
                 </div>
             </div>
         </div>
@@ -12,7 +12,7 @@
             <div class="input-group">
                 <input type="text" id="endDate" name="end_date" class="form-control validate[required]" style="width: 8rem;" onclick="WdatePicker({minDate:'#F{$dp.$D(\'startDate\')}'<{if !$smarty.session.tad_booking_adm}>, maxDate:'<{$maxDate}>'<{/if}>})" required value="<{$end_date}>" onchange="location.href='<{$smarty.server.PHP_SELF}>?start_date='+document.getElementById('startDate').value+'&end_date='+document.getElementById('endDate').value+'&item_id='+document.getElementById('item_id').value;">
                 <div class="input-group-prepend input-group-addon">
-                    <span class="input-group-text">止</span>
+                    <span class="input-group-text"><{$smarty.const._MD_TADBOOKING_END}></span>
                 </div>
             </div>
 

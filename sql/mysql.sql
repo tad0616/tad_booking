@@ -18,6 +18,9 @@ CREATE TABLE `tad_booking_cate` (
   `enable` enum('1','0') COLLATE utf8mb4_general_ci NOT NULL DEFAULT '1' COMMENT '狀態',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM;
+INSERT INTO `tad_booking_cate` (`id`, `title`, `sort`, `enable`) VALUES
+(1,	'場地',	1,	'1'),
+(2,	'設備',	2,	'1');
 
 
 CREATE TABLE `tad_booking_data` (

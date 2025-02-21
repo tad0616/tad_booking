@@ -118,7 +118,12 @@ function batch_delete_booking($batch_booking_arr)
     foreach ($batch_booking_arr as $item_id => $item_booking) {
         if (in_array($item_id, $_SESSION['can_approve']) || $_SESSION['tad_booking_adm']) {
             $booking_id_arr = array_unique(array_merge(...array_map('array_keys', $item_booking)));
-            $all_booking    = Tad_booking::get_all(['`id` IN(' . implode(',', $booking_id_arr) . ')'], [], [], [], 'id');
+            if ($booking_id_arr) {
+                $all_booking = Tad_booking::get_all(['`id` IN(' . implode(',', $booking_id_arr) . ')'], [], [], [], 'id');
+            } else {
+                $all_booking = [];
+            }
+
             foreach ($item_booking as $section_id => $section_booking) {
                 foreach ($section_booking as $booking_id => $dates) {
                     $booking = $all_booking[$booking_id];
@@ -156,13 +161,22 @@ function batch_update_booking_status($batch_booking_arr, $status)
             $item = Tad_booking_item::get(['id' => $item_id]);
             // 提取所有 section_id
             $section_id_arr = array_keys($item_booking);
-            $section_arr    = Tad_booking_section::get_all(['`id` IN(' . implode(',', $section_id_arr) . ')'], [], [], [], 'id');
+            if ($section_id_arr) {
+                $section_arr = Tad_booking_section::get_all(['`id` IN(' . implode(',', $section_id_arr) . ')'], [], [], [], 'id');
+            } else {
+                $section_arr = [];
+            }
 
             // 提取所有 booking_id
             $booking_id_arr = array_unique(array_merge(...array_map('array_keys', $item_booking)));
-            $all_booking    = Tad_booking::get_all(['`id` IN(' . implode(',', $booking_id_arr) . ')'], [], [], [], 'id');
-            $email_arr      = $email_content_arr      = [];
-            $status_text    = $status ? _MD_TADBOOKING_APPROVE . _MD_TADBOOKING_PASS : _MD_TADBOOKING_APPROVE . _MD_TADBOOKING_DENY;
+            if ($booking_id_arr) {
+                $all_booking = Tad_booking::get_all(['`id` IN(' . implode(',', $booking_id_arr) . ')'], [], [], [], 'id');
+            } else {
+                $all_booking = [];
+            }
+
+            $email_arr   = $email_content_arr   = [];
+            $status_text = $status ? _MD_TADBOOKING_APPROVE . _MD_TADBOOKING_PASS : _MD_TADBOOKING_APPROVE . _MD_TADBOOKING_DENY;
 
             foreach ($item_booking as $section_id => $section_booking) {
                 $section = $section_arr[$section_id];

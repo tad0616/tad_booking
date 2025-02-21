@@ -1,9 +1,6 @@
 <?php
-
 namespace XoopsModules\Tad_booking;
 
-use XoopsModules\Tadtools\FormValidator;
-use XoopsModules\Tadtools\SweetAlert;
 use XoopsModules\Tadtools\Utility;
 use XoopsModules\Tad_booking\Tools;
 
@@ -20,7 +17,6 @@ class Tad_booking_section
     ];
 
     public static $chinese_week = ['日', '一', '二', '三', '四', '五', '六'];
-
 
     //取得tad_booking_section所有資料陣列
     public static function get_all($where_arr = [], $other_arr = [], $view_cols = [], $order_arr = [], $key_name = false, $get_value = '', $filter = 'read', $amount = '')
@@ -69,7 +65,6 @@ class Tad_booking_section
         }
     }
 
-
     //以流水號取得某筆 tad_booking_section 資料
     public static function get($where_arr = [], $other_arr = [], $filter = 'read', $only_key = '')
     {
@@ -100,8 +95,6 @@ class Tad_booking_section
             return $data;
         }
     }
-
-
 
     //新增資料到 tad_booking_section Tad_booking_section::store()
     public static function store($data_arr = [])

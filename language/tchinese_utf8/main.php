@@ -111,3 +111,6 @@ define("_MD_TADBOOKING_EMPTY_BOOKING", "無預約資料");
 define("_MD_TADBOOKING_NEED_START_END", "請選擇開始和結束日期");
 define("_MD_TADBOOKING_START_BIGGER_END", "結束日期必須大於開始日期");
 define("_MD_TADBOOKING_NON_RESERVABLE_DATE", "非可預約日期");
+define("_MD_TADBOOKING_START", "起");
+define("_MD_TADBOOKING_END", "止");
+define("_MD_TADBOOKING_BOOKED", "已預約");

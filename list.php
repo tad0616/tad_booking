@@ -51,16 +51,30 @@ switch ($op) {
             $xoopsTpl->assign('item', $item);
 
         } else {
-            $booking_arr      = Tad_booking::get_all(['uid' => $_SESSION['now_user']['uid']], [], [], ['start_date' => 'DESC'], 'id');
-            $booking_ids      = implode(',', array_keys($booking_arr));
-            $booking_data_arr = Tad_booking_data::get_all(["`booking_id` IN($booking_ids)", "`booking_date` BETWEEN '$start_date' AND '$end_date'"], ['week'], [], ['booking_date' => 'DESC', 'section_id' => 'ASC', 'waiting' => 'ASC']);
-            $section_id_arr   = array_column($booking_data_arr, 'section_id');
+            $booking_arr = Tad_booking::get_all(['uid' => $_SESSION['now_user']['uid']], [], [], ['start_date' => 'DESC'], 'id');
+            $booking_ids = implode(',', array_keys($booking_arr));
+            if ($booking_ids) {
+                $booking_data_arr = Tad_booking_data::get_all(["`booking_id` IN($booking_ids)", "`booking_date` BETWEEN '$start_date' AND '$end_date'"], ['week'], [], ['booking_date' => 'DESC', 'section_id' => 'ASC', 'waiting' => 'ASC']);
+            } else {
+                $booking_data_arr = [];
+            }
+
+            $section_id_arr = array_column($booking_data_arr, 'section_id');
             if ($section_id_arr) {
                 $section_arr = Tad_booking_section::get_all(['`id` IN(' . implode(',', $section_id_arr) . ')'], [], [], [], 'id');
                 $item_id_arr = array_column($section_arr, 'item_id');
-                $item_arr    = Tad_booking_item::get_all(['`id` IN(' . implode(',', $item_id_arr) . ')'], [], [], [], 'id');
+                if ($item_id_arr) {
+                    $item_arr = Tad_booking_item::get_all(['`id` IN(' . implode(',', $item_id_arr) . ')'], [], [], [], 'id');
+                } else {
+                    $item_arr = [];
+                }
+
                 $cate_id_arr = array_column($item_arr, 'cate_id');
-                $cate_arr    = Tad_booking_cate::get_all(['`id` IN(' . implode(',', $cate_id_arr) . ')'], [], [], [], 'id');
+                if ($cate_id_arr) {
+                    $cate_arr = Tad_booking_cate::get_all(['`id` IN(' . implode(',', $cate_id_arr) . ')'], [], [], [], 'id');
+                } else {
+                    $cate_arr = [];
+                }
             }
 
             $xoopsTpl->assign('section_arr', $section_arr);

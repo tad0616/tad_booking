@@ -51,7 +51,8 @@
                     <div id="submit<{$section_id}>_<{$w}>">
                         <{if $w|in_array:$section.week_arr && $date|strtotime >= $item.today}>
                             <{if $ok_booking}>
-                                <{$ok_booking.info.name}>
+                                <{if $xoops_isuser}><{$ok_booking.info.name}><{else}><{$smarty.const._MD_TADBOOKING_BOOKED}><{/if}>
+
                                 <{if $smarty.session.tad_booking_adm|default:false || $ok_booking.uid == $smarty.session.now_user.uid}>
                                     <a href="javascript:delete_booking('<{$item.id}>', '<{$date}>', <{$section_id}>, '<{$ok_booking.booking_id}>', '<{$ok_booking.uid}>');" style='color:#D44950;' ><i class='fa fa-times' ></i></a>
                                 <{/if}>
@@ -98,7 +99,7 @@
                             <{/if}>
                         <{else}>
                             <{if $ok_booking && $ok_booking.status == 1}>
-                                <div style="color: gray;"><{$ok_booking.info.name}></div>
+                                <div style="color: gray;"><{if $xoops_isuser}><{$ok_booking.info.name}><{else}><{$smarty.const._MD_TADBOOKING_BOOKED}><{/if}></div>
                             <{/if}>
                         <{/if}>
                     </div>

@@ -6,7 +6,7 @@
                 calculateEndDate(dp.cal.getNewDateStr());
             }})" required value="<{$start_date}>">
             <div class="input-group-prepend input-group-addon">
-                <span class="input-group-text">起</span>
+                <span class="input-group-text"><{$smarty.const._MD_TADBOOKING_START}></span>
             </div>
         </div>
     </div>
@@ -14,7 +14,7 @@
         <div class="input-group">
             <input type="text" id="endDate" name="endDate" class="Wdate form-control" style="width: 8rem;" onclick="WdatePicker({minDate:'#F{$dp.$D(\'startDate\')}'})" required value="<{$end_date}>" onchange="location.href='<{$smarty.server.PHP_SELF}>?start_date='+document.getElementById('startDate').value+'&end_date='+document.getElementById('endDate').value+'&item_id='+document.getElementById('item_id').value;">
             <div class="input-group-prepend input-group-addon">
-                <span class="input-group-text">止</span>
+                <span class="input-group-text"><{$smarty.const._MD_TADBOOKING_END}></span>
             </div>
         </div>
 
