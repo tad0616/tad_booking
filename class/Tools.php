@@ -1,5 +1,4 @@
 <?php
-
 namespace XoopsModules\Tad_booking;
 
 use Xmf\Request;
@@ -208,7 +207,7 @@ class Tools
         //將 uid 編號轉換成使用者姓名（或帳號）
         $uid         = $xoopsUser->uid();
         $uid_name    = $booking_arr[$booking_date][$section_id][$uid]['info']['name'];
-        $is_approval = empty($booking_arr[$booking_date][$section_id][$uid]['status']) ? '<span class="approving">'._MD_TADBOOKING_APPROVING.'</span>' : $uid_name;
+        $is_approval = empty($booking_arr[$booking_date][$section_id][$uid]['status']) ? '<span class="approving">' . _MD_TADBOOKING_APPROVING . '</span>' : $uid_name;
 
         $icon = "{$is_approval}<a href=\"javascript:delete_booking('{$item_id}', '{$booking_date}', '{$section_id}', '{$item_id}', '{$booking_arr[$booking_date][$section_id][$uid]['booking_id']}', '{$uid}');\" style='color:#D44950;' ><i class='fa fa-times' ></i></a>";
         return $icon;
@@ -302,7 +301,7 @@ class Tools
      *
      * @param string $startDate 開始日期（格式：YYYY-MM-DD）
      * @param string $endDate 結束日期（格式：YYYY-MM-DD）
-     * @param array $targetDays 目標星期幾的數字陣列（1=星期一，7=星期日）
+     * @param array $targetDays 目標星期幾的數字陣列（0=星期日，1-6=星期一至六）
      * @return array 以星期幾（數字）為索引的日期列表（格式：YYYY-MM-DD）
      */
     public static function findDatesByDaysOfWeekGrouped($startDate, $endDate, $targetDays)
@@ -310,28 +309,22 @@ class Tools
         // 將輸入的日期轉換為 DateTime 物件
         $start = new \DateTime($startDate);
         $end   = new \DateTime($endDate);
-
         // 初始化結果陣列，以星期幾（數字）為鍵
         $result = array_fill_keys($targetDays, []);
-
         // 遍歷日期範圍
         while ($start <= $end) {
-            // 獲取當前日期的星期幾（數字）
-            $dayOfWeek = $start->format("N");
-
+            // 獲取當前日期的星期幾（w格式：0=星期日，1-6=星期一至六）
+            $dayOfWeek = $start->format("w");
             // 檢查當前日期是否在目標星期幾中
             if (in_array($dayOfWeek, $targetDays)) {
                 // 將日期添加到對應的星期幾鍵值下
                 $result[$dayOfWeek][] = $start->format("Y-m-d");
             }
-
             // 增加一天
             $start->add(new \DateInterval("P1D"));
         }
-
         return $result;
     }
-
 
     public static function findDatesByTargetDay($targetDay)
     {
@@ -356,14 +349,14 @@ class Tools
         $next_week_start = clone $selected_date;
         $next_week_start->modify('+7 days')->modify('-' . $week . ' days')->format('Y-m-d');
 
-        $data['week_dates']      = $week_dates;
-        $data['prev_week_start'] = $prev_week_start->format('Y-m-d');
-        $data['next_week_start'] = $next_week_start->format('Y-m-d');
+        $data['week_dates']         = $week_dates;
+        $data['prev_week_start']    = $prev_week_start->format('Y-m-d');
+        $data['next_week_start']    = $next_week_start->format('Y-m-d');
         $data['next_week_start_ts'] = $next_week_start->getTimestamp();
-        $data['selected_date']   = $selected_date->format('Y-m-d');
-        $data['tomorrow']        = strtotime('+1 day');
-        $data['today']        = strtotime('today');
-        $data['chinese_week'] = Tad_booking_section::$chinese_week;
+        $data['selected_date']      = $selected_date->format('Y-m-d');
+        $data['tomorrow']           = strtotime('+1 day');
+        $data['today']              = strtotime('today');
+        $data['chinese_week']       = Tad_booking_section::$chinese_week;
         return $data;
     }
 }

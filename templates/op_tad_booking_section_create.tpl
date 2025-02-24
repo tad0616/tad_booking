@@ -50,7 +50,7 @@
                   <!--時段標題-->
                   <div id="title_<{$section.id}>">
                     <span class="text-info">
-                      <i class="fa-solid fa-arrows-up-down" class="" title="<{$smarty.const._TAD_SORTABLE}>"></i>
+                      <i class="fa-solid fa-arrows-up-down" title="<{$smarty.const._TAD_SORTABLE}>"></i>
                     </span>
                     <a href="#" class="editable" data-name="title" data-type="text" data-pk="<{$section.id}>" data-params="{op: 'tad_booking_section_update_title'}"><{$section.title|default:$smarty.const._MD_TADBOOKING_UNFILLED}></a></div>
                 </td>
@@ -84,8 +84,8 @@
             <td>
               <input type="hidden" name="sort" value="<{$sort}>">
               <input type="hidden" name="item_id" value="<{$id|default:''}>">
-              <input type="hidden" name="op" value="tad_booking_section_store">
-              <button type="submit" class="btn btn-primary" id="tad_booking_section_store"><i class="fa-solid fa-plus"></i></button>
+              <{$token_form|default:''}>
+              <button type="submit" class="btn btn-primary" id="tad_booking_section_store" name="op" value="tad_booking_section_store"><i class="fa-solid fa-plus"></i></button>
             </td>
           </tr>
       </table>

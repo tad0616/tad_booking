@@ -96,7 +96,7 @@ switch ($op) {
     //顯示某筆資料
     case 'tad_booking_item_show':
         $where_arr['id'] = $item_id;
-        Tad_booking_item::show($where_arr, ['uid_name', 'sections', 'item_section_count']);
+        Tad_booking_item::show($where_arr, ['sections', 'item_section_count']);
         break;
 
     //新增資料
@@ -140,6 +140,7 @@ switch ($op) {
             $where_arr['id'] = $id;
             Tad_booking_cate::show($where_arr);
         }
+
         $op = 'tad_booking_cate_index';
         break;
 }

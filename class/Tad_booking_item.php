@@ -105,6 +105,9 @@ class Tad_booking_item
         $formValidator = new FormValidator("#myForm", true);
         $formValidator->render();
 
+        //加入Token安全機制
+        Utility::token_form();
+
         $Bootstrap3Editable     = new Bootstrap3Editable();
         $Bootstrap3EditableCode = $Bootstrap3Editable->render('.editable', 'ajax.php');
         $xoopsTpl->assign('Bootstrap3EditableCode', $Bootstrap3EditableCode);
@@ -141,8 +144,12 @@ class Tad_booking_item
         $TadUpFiles->set_col("tad_booking_item_id", $data['id']);
         $data['files'] = $TadUpFiles->show_files('tad_booking_item_files', true, 'thumb', false, false, null, null, false);
 
-        foreach ($data['info'] as $approval_uid => $approver) {
-            $data['approval_name_arr'][$approval_uid] = $approver['name'];
+        if ($data['info']) {
+            foreach ($data['info'] as $approval_uid => $approver) {
+                $data['approval_name_arr'][$approval_uid] = $approver['name'];
+            }
+        } else {
+            $data['approval_name_arr'] = [];
         }
 
         if (in_array('cate', $other_arr) || in_array('all', $other_arr)) {

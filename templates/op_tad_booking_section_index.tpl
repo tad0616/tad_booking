@@ -23,7 +23,11 @@
             <{else}>
                 <{$smarty.const._MD_TADBOOKING_ITEM_NO_NEED_APPROVAL_DESC|sprintf:$item.title}>
             <{/if}>
-            <{$smarty.const._MD_TADBOOKING_BOOKING_DESC|sprintf:$max_booking_week}>
+            <{if $smarty.session.tad_booking_adm}>
+                <{$smarty.const._MD_TADBOOKING_BOOKING_ADM_DESC|sprintf:$max_booking_week}>
+            <{else}>
+                <{$smarty.const._MD_TADBOOKING_BOOKING_DESC|sprintf:$max_booking_week}>
+            <{/if}>
         </ol>
     </div>
     <div class="vtb mt-4">
@@ -112,7 +116,11 @@
     <div class="alert alert-info mt-4">
         <ol class="m-0">
             <{$smarty.const._MD_TADBOOKING_ITEM_OPTION_DESC}>
-            <{$smarty.const._MD_TADBOOKING_BOOKING_DESC|sprintf:$max_booking_week}>
+            <{if $smarty.session.tad_booking_adm}>
+                <{$smarty.const._MD_TADBOOKING_BOOKING_ADM_DESC|sprintf:$max_booking_week}>
+            <{else}>
+                <{$smarty.const._MD_TADBOOKING_BOOKING_DESC|sprintf:$max_booking_week}>
+            <{/if}>
         </ol>
     </div>
 <{/if}>

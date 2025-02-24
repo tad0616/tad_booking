@@ -84,6 +84,7 @@ define('_MD_TADBOOKING_ITEM_NO_NEED_APPROVAL_DESC', '<li>"%s" does not require a
 define("_MD_TADBOOKING_BOOKING_LIST", "Booker List");
 define("_MD_TADBOOKING_UNFILLED", "Unfilled");
 define("_MD_TADBOOKING_ITEM_OPTION_DESC", "<li>Please select the item you want to book from the drop-down menu above</li><li>Please log in first to book</li>");
+define('_MD_TADBOOKING_BOOKING_ADM_DESC', '<li>Currently, reservations can be made up to %s weeks at most. Click the icon button to complete the reservation.</li>');
 define('_MD_TADBOOKING_BOOKING_DESC', '<li>Currently, reservations can be made up to %s weeks at most (users with management rights are not subject to this limit). Click the icon button to complete the reservation.</li>');
 define("_MD_TADBOOKING_PASS", "PASS");
 define("_MD_TADBOOKING_DENY", "Not approved");

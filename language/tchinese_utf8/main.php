@@ -84,7 +84,8 @@ define('_MD_TADBOOKING_ITEM_NO_NEED_APPROVAL_DESC', '<li>「%s」不需審核，
 define("_MD_TADBOOKING_BOOKING_LIST", "預約者清單");
 define("_MD_TADBOOKING_UNFILLED", "未填");
 define("_MD_TADBOOKING_ITEM_OPTION_DESC", "<li>請在上方下拉選單內選擇欲預約之項目</li><li>若要預約請先登入</li>");
-define('_MD_TADBOOKING_BOOKING_DESC', '<li>目前最多可預約到 %s 週內（有管理權限者不受此限制），點擊圖示按鈕即可完成預約。</li>');
+define('_MD_TADBOOKING_BOOKING_ADM_DESC', '<li>目前最多可預約到 %s 週內（有管理權限者不受此限制），點擊圖示按鈕即可完成預約。</li>');
+define('_MD_TADBOOKING_BOOKING_DESC', '<li>目前最多可預約到 %s 週內，點擊圖示按鈕即可完成預約。</li>');
 define("_MD_TADBOOKING_PASS", "通過");
 define("_MD_TADBOOKING_DENY", "不通過");
 define("_MD_TADBOOKING_BATCH_DELETE", "將勾選之預約全部刪除");

@@ -2,7 +2,7 @@
     <{if $smarty.session.tad_booking_adm|default:false}>
         <script type="text/javascript">
             $(document).ready(function(){
-                $("#tad_booking_item_sort").sortable({ opacity: 0.6, cursor: "move", update: function() {
+                $(".tad_booking_item_sort").sortable({ opacity: 0.6, cursor: "move", update: function() {
                     var order = $(this).sortable("serialize");
                     $.post("<{$xoops_url}>/modules/tad_booking/manager.php", order + "&op=tad_booking_item_update_sort", function(msg){
                         $("#tad_booking_item_save_msg").html(msg);
@@ -31,8 +31,8 @@
         </ul>
 
         <div class="resp-tabs-container vert">
-            <{foreach from=$all_tad_booking_cate key=k item=data}>
-                <div id="tad_booking_item_sort">
+            <{foreach from=$all_tad_booking_cate key=cate_id item=data}>
+                <div class="tad_booking_item_sort">
                     <{foreach from=$data.item_arr key=item_id item=item_section}>
                         <div id="tr_<{$item_id}>" class="my-border my-2 d-inline-block" style="width: auto;">
                             <{if $item_section.item.enable}>
@@ -64,7 +64,7 @@
                     <div class="mt-3">
                         <{if $smarty.session.tad_booking_adm|default:false}>
 
-                                <a href="javascript:tad_booking_cate_destroy_func(<{$data.id}>);" class="btn btn-sm btn-danger <{if $data.item_arr}>disabled<{/if}>" title="<{if $data.item_arr}><{$smarty.const._MD_TADBOOKING_CANT_DELETE}><{else}><{$smarty.const._MD_TADBOOKING_DEL_CATE|sprintf:$data.title}><{/if}>"><i class="fa fa-trash"></i> <{$smarty.const._MD_TADBOOKING_DEL_CATE|sprintf:$data.title}></a>
+                            <a href="javascript:tad_booking_cate_destroy_func(<{$data.id}>);" class="btn btn-sm btn-danger <{if $data.item_arr}>disabled<{/if}>" title="<{if $data.item_arr}><{$smarty.const._MD_TADBOOKING_CANT_DELETE}><{else}><{$smarty.const._MD_TADBOOKING_DEL_CATE|sprintf:$data.title}><{/if}>"><i class="fa fa-trash"></i> <{$smarty.const._MD_TADBOOKING_DEL_CATE|sprintf:$data.title}></a>
 
                             <a href="<{$xoops_url}>/modules/tad_booking/manager.php?op=tad_booking_cate_edit&id=<{$data.id}>" class="btn btn-sm btn-warning" title="<{$smarty.const._TAD_EDIT}>"><i class="fa fa-pencil"></i> <{$smarty.const._MD_TADBOOKING_EDIT_CATE|sprintf:$data.title}></a>
                         <{/if}>
