@@ -34,7 +34,8 @@ switch ($op) {
     default:
         $booking_data = $booking = $section_arr = $item_arr = $cate_arr = [];
         $xoopsTpl->assign('cates', Tad_booking_cate::get_all(['enable' => 1], ['items'], [], ['sort' => 'ASC'], 'id'));
-        if (! empty($item_id)) {
+        $uid = ($_SESSION['tad_booking_adm'] && !empty($uid)) ? $uid : $_SESSION['now_user']['uid'];
+        if (!empty($item_id)) {
             $item     = Tad_booking_item::get(['id' => $item_id], ['sections', 'cate']);
             $sections = implode(',', array_keys($item['sections']));
 
@@ -43,7 +44,7 @@ switch ($op) {
                 $booking_id_arr   = array_column($booking_data_arr, 'booking_id');
                 if ($booking_id_arr) {
                     $booking_ids = implode(',', $booking_id_arr);
-                    $booking_arr = Tad_booking::get_all(['uid' => $_SESSION['now_user']['uid'], "`id` IN($booking_ids)"], [], [], [], 'id');
+                    $booking_arr = Tad_booking::get_all(['uid' => $uid, "`id` IN($booking_ids)"], [], [], [], 'id');
                 }
             }
 
@@ -51,39 +52,38 @@ switch ($op) {
             $xoopsTpl->assign('item', $item);
 
         } else {
-            $booking_arr = Tad_booking::get_all(['uid' => $_SESSION['now_user']['uid']], [], [], ['start_date' => 'DESC'], 'id');
+            $booking_arr = Tad_booking::get_all(['uid' => $uid], [], [], ['start_date' => 'DESC'], 'id');
             $booking_ids = implode(',', array_keys($booking_arr));
             if ($booking_ids) {
                 $booking_data_arr = Tad_booking_data::get_all(["`booking_id` IN($booking_ids)", "`booking_date` BETWEEN '$start_date' AND '$end_date'"], ['week'], [], ['booking_date' => 'DESC', 'section_id' => 'ASC', 'waiting' => 'ASC']);
             } else {
                 $booking_data_arr = [];
             }
+        }
 
-            $section_id_arr = array_column($booking_data_arr, 'section_id');
-            if ($section_id_arr) {
-                $section_arr = Tad_booking_section::get_all(['`id` IN(' . implode(',', $section_id_arr) . ')'], [], [], [], 'id');
-                $item_id_arr = array_column($section_arr, 'item_id');
-                if ($item_id_arr) {
-                    $item_arr = Tad_booking_item::get_all(['`id` IN(' . implode(',', $item_id_arr) . ')'], [], [], [], 'id');
-                } else {
-                    $item_arr = [];
-                }
-
-                $cate_id_arr = array_column($item_arr, 'cate_id');
-                if ($cate_id_arr) {
-                    $cate_arr = Tad_booking_cate::get_all(['`id` IN(' . implode(',', $cate_id_arr) . ')'], [], [], [], 'id');
-                } else {
-                    $cate_arr = [];
-                }
+        $section_id_arr = array_column($booking_data_arr, 'section_id');
+        if ($section_id_arr) {
+            $section_arr = Tad_booking_section::get_all(['`id` IN(' . implode(',', $section_id_arr) . ')'], [], [], [], 'id');
+            $item_id_arr = array_column($section_arr, 'item_id');
+            if ($item_id_arr) {
+                $item_arr = Tad_booking_item::get_all(['`id` IN(' . implode(',', $item_id_arr) . ')'], [], [], [], 'id');
+            } else {
+                $item_arr = [];
             }
 
-            $xoopsTpl->assign('section_arr', $section_arr);
-            $xoopsTpl->assign('item_arr', $item_arr);
-            $xoopsTpl->assign('cate_arr', $cate_arr);
+            $cate_id_arr = array_column($item_arr, 'cate_id');
+            if ($cate_id_arr) {
+                $cate_arr = Tad_booking_cate::get_all(['`id` IN(' . implode(',', $cate_id_arr) . ')'], [], [], [], 'id');
+            } else {
+                $cate_arr = [];
+            }
         }
+
+        $xoopsTpl->assign('section_arr', $section_arr);
+        $xoopsTpl->assign('item_arr', $item_arr);
+        $xoopsTpl->assign('cate_arr', $cate_arr);
         $xoopsTpl->assign('booking_arr', $booking_arr);
         $xoopsTpl->assign('booking_data_arr', $booking_data_arr);
-
         $xoopsTpl->assign('start_date', $start_date);
         $xoopsTpl->assign('end_date', $end_date);
         My97DatePicker::render();

@@ -8,12 +8,12 @@ class Tad_booking_section
 {
     // 過濾用變數的設定
     public static $filter_arr = [
-        'int'     => ['id', 'item_id', 'sort'], //數字類的欄位
-        'html'    => [],                        //含網頁語法的欄位（所見即所得的內容）
-        'text'    => [],                        //純大量文字欄位
-        'json'    => [],                        //內容為 json 格式的欄位
-        'pass'    => [],                        //不予過濾的欄位
-        'explode' => [],                        //用分號隔開的欄位
+        'int' => ['id', 'item_id', 'sort'], //數字類的欄位
+        'html' => [], //含網頁語法的欄位（所見即所得的內容）
+        'text' => [], //純大量文字欄位
+        'json' => [], //內容為 json 格式的欄位
+        'pass' => [], //不予過濾的欄位
+        'explode' => [], //用分號隔開的欄位
     ];
 
     public static $chinese_week = ['日', '一', '二', '三', '四', '五', '六'];
@@ -130,7 +130,7 @@ class Tad_booking_section
 
         //取得最後新增資料的流水編號
         $id = $xoopsDB->getInsertId();
-
+        unset($_SESSION['tad_booking_cate_arr']);
         return $id;
     }
 
@@ -142,7 +142,7 @@ class Tad_booking_section
 
         $and = Tools::get_and_where($where_arr);
 
-        if (! empty($data_arr)) {
+        if (!empty($data_arr)) {
             $col_arr = [];
 
             foreach ($data_arr as $key => $value) {
@@ -170,7 +170,7 @@ class Tad_booking_section
             WHERE 1 $and";
         }
         $xoopsDB->queryF($sql) or Utility::web_error($sql);
-
+        unset($_SESSION['tad_booking_cate_arr']);
         return $where_arr['id'];
     }
 
@@ -206,6 +206,7 @@ class Tad_booking_section
         $sql = "DELETE FROM `" . $xoopsDB->prefix("tad_booking_section") . "`
         WHERE 1 $and";
         $xoopsDB->queryF($sql) or Utility::web_error($sql);
+        unset($_SESSION['tad_booking_cate_arr']);
     }
 
     //自動取得tad_booking_section的最新排序

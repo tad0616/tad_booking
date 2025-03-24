@@ -10,9 +10,9 @@
 <{$Bootstrap3EditableCode}>
 
 <div class="row my-3 mx-auto" id="booking_bar">
-    <div class="col-4 text-right text-end"><{if $item.id|default:false}><a href="index.php?item_id=<{$item.id}>&date=<{$item.prev_week_start}>#xoops_contents" class="btn btn-success"><i class="fa-solid fa-circle-chevron-left"></i> <{$smarty.const._MD_TADBOOKING_PREVIOUS_WEEK}></a><{/if}></div>
+    <div class="col-4 text-right text-end"><{if $item.id|default:false}><a href="index.php?item_id=<{$item.id}>&date=<{$item.prev_week_start}><{if $theme_name!='school2019'}>#xoops_contents<{/if}>" class="btn btn-success"><i class="fa-solid fa-circle-chevron-left"></i> <{$smarty.const._MD_TADBOOKING_PREVIOUS_WEEK}></a><{/if}></div>
     <div class="col-4"><{include file="$xoops_rootpath/modules/tad_booking/templates/sub_item_menu.tpl" item_id=$smarty.get.item_id|default:0}></div>
-    <div class="col-4"><{if $item.id|default:false}><a href="index.php?item_id=<{$item.id}>&date=<{$item.next_week_start}>#xoops_contents" class="btn btn-success <{if $end_date_ts < $item.next_week_start_ts && !$smarty.session.tad_booking_adm}>disabled<{/if}>"><{$smarty.const._MD_TADBOOKING_NEXT_WEEK}> <i class="fa-solid fa-circle-chevron-right"></i></a><{/if}></div>
+    <div class="col-4"><{if $item.id|default:false}><a href="index.php?item_id=<{$item.id}>&date=<{$item.next_week_start}><{if $theme_name!='school2019'}>#xoops_contents<{/if}>" class="btn btn-success <{if $end_date_ts < $item.next_week_start_ts && !$smarty.session.tad_booking_adm}>disabled<{/if}>"><{$smarty.const._MD_TADBOOKING_NEXT_WEEK}> <i class="fa-solid fa-circle-chevron-right"></i></a><{/if}></div>
 </div>
 
 <{if $item.id|default:false}>
@@ -104,6 +104,8 @@
                         <{else}>
                             <{if $ok_booking && $ok_booking.status == 1}>
                                 <div style="color: gray;"><{if $xoops_isuser}><{$ok_booking.info.name}><{else}><{$smarty.const._MD_TADBOOKING_BOOKED}><{/if}></div>
+                            <{else}>
+                                <i class="fa fa-times" aria-hidden="true"></i>
                             <{/if}>
                         <{/if}>
                     </div>

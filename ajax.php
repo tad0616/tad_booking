@@ -1,7 +1,6 @@
 <?php
 
 use Xmf\Request;
-use XoopsModules\Tadtools\Utility;
 use XoopsModules\Tad_booking\Tad_booking;
 use XoopsModules\Tad_booking\Tad_booking_data;
 use XoopsModules\Tad_booking\Tad_booking_item;
@@ -10,6 +9,9 @@ use XoopsModules\Tad_booking\Tad_booking_week;
 use XoopsModules\Tad_booking\Tools;
 
 require_once dirname(dirname(__DIR__)) . '/mainfile.php';
+if (!class_exists('XoopsModules\Tad_booking\Tad_booking')) {
+    require XOOPS_ROOT_PATH . '/modules/tad_booking/preloads/autoloader.php';
+}
 
 header('HTTP/1.1 200 OK');
 $xoopsLogger->activated = false;
@@ -136,7 +138,9 @@ function change_section_enable($section_id = "", $week = "")
 
 function delete_booking($section_id, $booking_date, $booking_id, $uid)
 {
-    if (!$section_id || !$booking_date) return;
+    if (!$section_id || !$booking_date) {
+        return;
+    }
 
     // 取得該日期時段的預訂
     list($booking_arr, $ok_booking) = Tools::booking_arr($booking_date, $booking_date, $section_id);
@@ -145,7 +149,6 @@ function delete_booking($section_id, $booking_date, $booking_id, $uid)
     Tad_booking_data::destroy($booking_date, $section_id, $booking_id);
     Tad_booking_week::destroy($section_id, $booking_id, $booking_date, $booking_date);
     Tad_booking::destroy($booking_id, $booking_date);
-
 
     $del_waiting = $booking_arr[$booking_date][$section_id][$uid]['waiting'];
 

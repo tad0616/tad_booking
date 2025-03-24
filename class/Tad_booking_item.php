@@ -16,12 +16,12 @@ class Tad_booking_item
 {
     // 過濾用變數的設定
     public static $filter_arr = [
-        'int'     => ['id', 'cate_id', 'sort'], //數字類的欄位
-        'html'    => ['desc'],                  //含網頁語法的欄位（所見即所得的內容）
-        'text'    => [],                        //純大量文字欄位
-        'json'    => ['info'],                  //內容為 json 格式的欄位
-        'pass'    => [],                        //不予過濾的欄位
-        'explode' => ['approval'],              //用分號隔開的欄位
+        'int' => ['id', 'cate_id', 'sort'], //數字類的欄位
+        'html' => ['desc'], //含網頁語法的欄位（所見即所得的內容）
+        'text' => [], //純大量文字欄位
+        'json' => ['info'], //內容為 json 格式的欄位
+        'pass' => [], //不予過濾的欄位
+        'explode' => ['approval'], //用分號隔開的欄位
     ];
 
     //取得tad_booking_item所有資料陣列
@@ -209,7 +209,7 @@ class Tad_booking_item
         Tools::chk_is_adm('can_booking', '', __FILE__, __LINE__);
 
         //抓取預設值
-        $tad_booking_item = (! empty($id)) ? self::get(['id' => $id]) : [];
+        $tad_booking_item = (!empty($id)) ? self::get(['id' => $id]) : [];
 
         //預設值設定
 
@@ -229,7 +229,7 @@ class Tad_booking_item
             $xoopsTpl->assign($key, $value);
         }
 
-        $op = (! empty($id)) ? "tad_booking_item_update" : "tad_booking_item_store";
+        $op = (!empty($id)) ? "tad_booking_item_update" : "tad_booking_item_store";
         $xoopsTpl->assign('next_op', $op);
 
         //套用formValidator驗證機制
@@ -303,7 +303,7 @@ class Tad_booking_item
             $$key = Tools::filter($key, $value, 'write', self::$filter_arr);
         }
 
-        if (! empty($approval)) {
+        if (!empty($approval)) {
             $approval_arr   = explode(',', $approval);
             $member_handler = xoops_gethandler('member');
             $approval_info  = [];
@@ -348,6 +348,7 @@ class Tad_booking_item
         $TadUpFiles->set_col("tad_booking_item_id", $id);
         //$TadUpFiles->set_dir('subdir', "");
         $TadUpFiles->upload_file('tad_booking_item_files', '', '', '', '', true, false);
+        unset($_SESSION['tad_booking_cate_arr']);
         return $id;
     }
 
@@ -359,7 +360,7 @@ class Tad_booking_item
 
         $and = Tools::get_and_where($where_arr);
 
-        if (! empty($data_arr)) {
+        if (!empty($data_arr)) {
             $col_arr = [];
 
             foreach ($data_arr as $key => $value) {
@@ -376,7 +377,7 @@ class Tad_booking_item
                 $$key = Tools::filter($key, $value, 'write', self::$filter_arr);
             }
 
-            if (! empty($approval)) {
+            if (!empty($approval)) {
                 $approval_arr   = explode(',', $approval);
                 $member_handler = xoops_gethandler('member');
                 $approval_info  = [];
@@ -408,7 +409,7 @@ class Tad_booking_item
         $TadUpFiles->set_col("tad_booking_item_id", $id);
         //$TadUpFiles->set_dir('subdir', "");
         $TadUpFiles->upload_file('tad_booking_item_files', '', '', '', '', true, false);
-
+        unset($_SESSION['tad_booking_cate_arr']);
         return $where_arr['id'];
     }
 
@@ -434,6 +435,7 @@ class Tad_booking_item
         $TadUpFiles = new TadUpFiles("tad_booking");
         $TadUpFiles->set_col("id", $id);
         $TadUpFiles->del_files();
+        unset($_SESSION['tad_booking_cate_arr']);
     }
 
     //自動取得tad_booking_item的最新排序

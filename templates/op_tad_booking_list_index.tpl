@@ -52,10 +52,9 @@
         <{foreach from=$booking_data_arr item=data name=booking}>
             <{assign var="booking_id" value=$data.booking_id}>
             <{assign var="section_id" value=$data.section_id}>
-            <{if !$item_id|default:0}>
-                <{assign var="item_id" value=$section_arr.$section_id.item_id}>
-                <{assign var="cate_id" value=$item_arr.$item_id.cate_id}>
-            <{/if}>
+            <{assign var="item_id" value=$section_arr.$section_id.item_id}>
+            <{assign var="cate_id" value=$item_arr.$item_id.cate_id}>
+
             <{if $booking_arr.$booking_id.uid}>
                 <tr class="text-center">
                     <td class="c">
